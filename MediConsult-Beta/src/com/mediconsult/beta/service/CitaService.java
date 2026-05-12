@@ -44,6 +44,10 @@ public class CitaService {
      * - Debe estar disponible.
      * - No debe tener otra cita activa ese día.
      * - La fecha no puede ser pasada.
+     * @param pacienteId
+     * @param medicoId
+     * @param fecha
+     * @return 
      */
     public Cita agendarCita(int pacienteId, int medicoId, LocalDate fecha) {
         validar(fecha != null, "La fecha de la cita no puede ser nula.");
@@ -85,6 +89,7 @@ public class CitaService {
 
     /**
      * Cambia el estado de una cita a COMPLETADA.
+     * @param citaId
      */
     public void completarCita(int citaId) {
         Cita cita = obtenerCitaOFallar(citaId);
@@ -100,6 +105,7 @@ public class CitaService {
     /**
      * Elimina físicamente una cita del CSV.
      * Preferir cancelar para conservar historial.
+     * @param citaId
      */
     public void eliminarCita(int citaId) {
         citaDAO.eliminar(citaId);
@@ -107,28 +113,38 @@ public class CitaService {
 
     // ── Lectura ───────────────────────────────────────────────────────────
 
-    /** Busca una cita por id. */
+    /** Busca una cita por id.
+     * @param id
+     * @return  */
     public Optional<Cita> obtenerPorId(int id) {
         return citaDAO.buscarPorId(id);
     }
 
-    /** Lista todas las citas. */
+    /** Lista todas las citas.
+     * @return  */
     public List<Cita> listarTodas() {
         return citaDAO.listarTodos();
     }
 
-    /** Historial de citas de un paciente. */
+    /** Historial de citas de un paciente.
+     * @param pacienteId
+     * @return  */
     public List<Cita> listarPorPaciente(int pacienteId) {
         return citaDAO.listarPorPaciente(pacienteId);
     }
 
-    /** Agenda completa de un médico. */
+    /** Agenda completa de un médico.
+     * @param medicoId
+     * @return  */
     public List<Cita> listarPorMedico(int medicoId) {
         return citaDAO.listarPorMedico(medicoId);
     }
 
     /**
      * Indica si un médico puede recibir cita en una fecha.
+     * @param medicoId
+     * @param fecha
+     * @return 
      */
     public boolean verificarDisponibilidad(int medicoId, LocalDate fecha) {
         Optional<Medico> opt = medicoDAO.buscarPorId(medicoId);
