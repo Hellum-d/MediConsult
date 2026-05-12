@@ -1,6 +1,6 @@
 package com.mediconsult.dao.interfaces;
 
-import com.mediconsult.model.Usuario;
+import com.mediconsult.beta.model.Usuario;
 import java.util.Optional;
 
 /**

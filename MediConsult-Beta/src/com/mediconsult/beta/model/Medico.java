@@ -1,4 +1,4 @@
-package com.mediconsult.model;
+package com.mediconsult.beta.model;
 
 /**
  * Representa al medico del consultorio.

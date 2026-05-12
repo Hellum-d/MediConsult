@@ -1,4 +1,4 @@
-package com.mediconsult.model;
+package com.mediconsult.beta.model;
 
 /**
  * Credenciales de acceso al sistema.

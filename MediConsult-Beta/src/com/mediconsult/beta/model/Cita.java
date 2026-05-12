@@ -1,4 +1,4 @@
-package com.mediconsult.model;
+package com.mediconsult.beta.model;
 
 import java.time.LocalDate;
 

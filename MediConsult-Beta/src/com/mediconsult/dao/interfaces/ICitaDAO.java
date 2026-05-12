@@ -1,6 +1,6 @@
 package com.mediconsult.dao.interfaces;
 
-import com.mediconsult.model.Cita;
+import com.mediconsult.beta.model.Cita;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

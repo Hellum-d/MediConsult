@@ -1,4 +1,4 @@
-package com.mediconsult.model;
+package com.mediconsult.beta.model;
 
 /**
  * Clase base abstracta de la jerarquia de dominio.

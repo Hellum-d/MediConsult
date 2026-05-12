@@ -188,7 +188,7 @@ public class OpenAIClient {
 
     /**
      * Escapa caracteres especiales para que el texto sea válido en JSON.
-     */s
+     */
     private String escaparJson(String texto) {
         return texto
                 .replace("\\", "\\\\")
