@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+
+<!--
+  header_logo.fxml — Componente reutilizable de branding CLINEX
+  Incluir con: <fx:include source="header_logo.fxml"/>
+  Usado en: pacientes.fxml, medicos.fxml, citas.fxml, diagnostico.fxml
+
+  PNG optimizado: 136 x 188 px (recortado de 676 x 369 original).
+  Márgenes transparentes: 8 px en los 4 lados — contenido centrado simétricamente.
+  No se usan translateX, translateY ni offsets artificiales.
+  El alineamiento vertical es correcto por geometría del PNG, no por hacks.
+-->
+<HBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      spacing="8"
+      alignment="CENTER_LEFT">
+
+    <ImageView fitHeight="30"
+               preserveRatio="true"
+               smooth="true">
+        <image><Image url="@logo.png"/></image>
+    </ImageView>
+
+    <Label text="CLINEX"
+           styleClass="top-bar-title"/>
+
+</HBox>

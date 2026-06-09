@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  consulta_medica.fxml — CLINEX Medical Consultation
+  Controller: ConsultaMedicaController
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.ConsultaMedicaController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Consulta Médica" style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="infoCitaLabel" text="Cita"
+               style="-fx-font-size:12px; -fx-text-fill:#73777f;"/>
+        <Button text="← Panel Médico"
+                onAction="#onVolver"
+                style="-fx-background-color:transparent; -fx-border-color:rgba(46,134,222,0.35); -fx-border-radius:10; -fx-background-radius:10; -fx-text-fill:#002444; -fx-font-weight:bold; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Info paciente + historial ───── -->
+        <ScrollPane fitToWidth="true" prefWidth="380" minWidth="300"
+                    style="-fx-background:transparent; -fx-background-color:#ffffff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+            <VBox spacing="16" style="-fx-padding:24 20 24 24;">
+
+                <!-- Datos del paciente -->
+                <VBox spacing="10">
+                    <Label text="PACIENTE"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <StackPane style="-fx-background-color:#1a3a5c; -fx-background-radius:28; -fx-min-width:56; -fx-min-height:56; -fx-max-width:56; -fx-max-height:56; -fx-alignment:center;">
+                            <Label text="👤" style="-fx-font-size:24px;"/>
+                        </StackPane>
+                        <VBox spacing="4">
+                            <Label fx:id="nombrePacienteLabel" text="Cargando..."
+                                   style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                            <Label fx:id="correoPacienteLabel" text="—"
+                                   style="-fx-font-size:12px; -fx-text-fill:#73777f;"/>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="16">
+                        <VBox spacing="2">
+                            <Label text="Edad" style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                            <Label fx:id="edadLabel" text="—"
+                                   style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        </VBox>
+                        <VBox spacing="2">
+                            <Label text="Tipo de Sangre" style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                            <Label fx:id="tipoSangreLabel" text="—"
+                                   style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        </VBox>
+                    </HBox>
+                    <VBox spacing="2">
+                        <Label text="Alergias" style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                        <Label fx:id="alergiasLabel" text="—"
+                               style="-fx-font-size:13px; -fx-text-fill:#0b1c30; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                    </VBox>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Autodiagnósticos IA -->
+                <VBox spacing="8">
+                    <Label text="AUTODIAGNÓSTICOS IA (últimos 3)"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                    <VBox fx:id="autodiagHistorialView" spacing="8"/>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Historias clínicas anteriores -->
+                <VBox spacing="8">
+                    <Label text="HISTORIAS CLÍNICAS PREVIAS"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                    <VBox fx:id="historiasAnterioresView" spacing="8"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+
+        <!-- ─── PANEL DERECHO: Formulario de consulta ────────── -->
+        <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS"
+                    style="-fx-background:transparent; -fx-background-color:transparent;">
+            <VBox spacing="16" style="-fx-padding:24 28 24 24;">
+
+                <!-- Título -->
+                <Label text="Historia Clínica"
+                       style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+
+                <!-- ── Anamnesis ── -->
+                <VBox spacing="6">
+                    <Label text="ANAMNESIS" styleClass="form-section-title"/>
+                    <Label text="Relato del paciente: inicio, evolución, síntomas, antecedentes."
+                           styleClass="field-hint"/>
+                    <TextArea fx:id="anamnesisArea"
+                              promptText="Describa aquí los síntomas referidos por el paciente, tiempo de evolución y antecedentes relevantes..."
+                              styleClass="text-area-clinex"
+                              prefRowCount="4" wrapText="true"/>
+                </VBox>
+
+                <!-- ── Examen físico ── -->
+                <VBox spacing="6">
+                    <Label text="EXAMEN FÍSICO" styleClass="form-section-title"/>
+                    <Label text="Hallazgos de la exploración física del médico."
+                           styleClass="field-hint"/>
+                    <TextArea fx:id="examenFisicoArea"
+                              promptText="Signos vitales, inspección, auscultación, palpación, hallazgos relevantes..."
+                              styleClass="text-area-clinex"
+                              prefRowCount="4" wrapText="true"/>
+                </VBox>
+
+                <!-- ── Diagnóstico ── -->
+                <VBox spacing="6">
+                    <Label text="DIAGNÓSTICO" styleClass="form-section-title"/>
+                    <TextField fx:id="diagnosticoField"
+                               promptText="Ej: Faringitis aguda bacteriana, Hipertensión arterial estadio I..."
+                               styleClass="form-field" maxWidth="1.7976931348623157E308"/>
+                </VBox>
+
+                <!-- ── Tratamiento ── -->
+                <VBox spacing="6">
+                    <Label text="TRATAMIENTO" styleClass="form-section-title"/>
+                    <TextArea fx:id="tratamientoArea"
+                              promptText="Medicamentos, dosis, duración, indicaciones generales..."
+                              styleClass="text-area-clinex"
+                              prefRowCount="4" wrapText="true"/>
+                </VBox>
+
+                <!-- ── Observaciones ── -->
+                <VBox spacing="6">
+                    <Label text="OBSERVACIONES" styleClass="form-section-title"/>
+                    <TextArea fx:id="observacionesArea"
+                              promptText="Notas adicionales, seguimiento, alertas, recomendaciones especiales..."
+                              styleClass="text-area-clinex"
+                              prefRowCount="3" wrapText="true"/>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- ── Órdenes Médicas ── -->
+                <VBox spacing="8">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="ÓRDENES MÉDICAS" styleClass="form-section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="nuevaOrdenBtn" text="＋  Nueva Orden"
+                                onAction="#onNuevaOrden"
+                                style="-fx-background-color:#002444; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:8; -fx-padding:6 14; -fx-cursor:hand; -fx-font-size:12px;"/>
+                    </HBox>
+                    <VBox fx:id="ordenesView" spacing="8"/>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- ── Remisión a Especialista ── -->
+                <VBox spacing="8">
+                    <HBox alignment="CENTER_LEFT" spacing="12">
+                        <Label text="REMISIÓN A ESPECIALISTA" styleClass="form-section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="nuevaRemisionBtn" text="🔗  Nueva Remisión"
+                                onAction="#onNuevaRemision"
+                                style="-fx-background-color:#1a3a5c; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:8; -fx-padding:6 14; -fx-cursor:hand; -fx-font-size:12px;"/>
+                    </HBox>
+                    <VBox fx:id="remisionesView" spacing="8"/>
+                </VBox>
+
+                <!-- Status label -->
+                <Label fx:id="statusLabel" text=""
+                       style="-fx-font-size:12px; -fx-text-fill:#0060aa;"/>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Botones de acción -->
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button fx:id="guardarBtn" text="💾  Guardar Historia Clínica"
+                            onAction="#onGuardar"
+                            styleClass="btn-secondary"
+                            prefHeight="46" style="-fx-font-size:14px; -fx-padding:10 24;"/>
+                    <Button fx:id="completarBtn" text="✓  Completar Cita y Cerrar"
+                            onAction="#onCompletarCita"
+                            styleClass="btn-primary"
+                            prefHeight="46" style="-fx-font-size:14px; -fx-padding:10 24;"/>
+                </HBox>
+
+                <!-- Aviso -->
+                <Label text="⚠  Guarda la historia clínica antes de completar la cita. Los cambios no guardados se perderán."
+                       style="-fx-font-size:11px; -fx-text-fill:#92400E; -fx-wrap-text:true;"
+                       wrapText="true"/>
+
+            </VBox>
+        </ScrollPane>
+
+    </HBox>
+
+</VBox>

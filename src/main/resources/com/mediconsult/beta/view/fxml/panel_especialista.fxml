@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  panel_especialista.fxml — CLINEX Specialist Panel
+  Controller: PanelEspecialistaController
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.PanelEspecialistaController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Panel Especialista" style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Perfil + stats ──────────────── -->
+        <VBox prefWidth="320" minWidth="260" spacing="20"
+              style="-fx-padding:28 24 28 28; -fx-background-color:#ffffff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+
+            <!-- Avatar e info del especialista -->
+            <VBox spacing="10" alignment="CENTER">
+                <StackPane style="-fx-background-color:#1a3a5c; -fx-background-radius:40; -fx-min-width:80; -fx-min-height:80; -fx-max-width:80; -fx-max-height:80; -fx-alignment:center;">
+                    <Label text="🩺" style="-fx-font-size:36px;"/>
+                </StackPane>
+                <Label fx:id="nombreEspecialistaLabel" text="Dr(a). Especialista"
+                       style="-fx-font-size:17px; -fx-font-weight:bold; -fx-text-fill:#0b1c30; -fx-text-alignment:center;"
+                       wrapText="true"/>
+                <Label fx:id="especialidadLabel" text="Especialidad"
+                       style="-fx-background-color:rgba(26,58,92,0.12); -fx-background-radius:20; -fx-padding:4 14; -fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+            </VBox>
+
+            <!-- Separador -->
+            <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+            <!-- Estadísticas -->
+            <VBox spacing="12">
+                <Label text="RESUMEN DE REMISIONES"
+                       style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                <HBox spacing="12">
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statPendientesLabel" text="0"
+                               style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#F59E0B;"/>
+                        <Label text="PENDIENTES"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statEnAtencionLabel" text="0"
+                               style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                        <Label text="EN ATENCIÓN"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Separador -->
+            <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+            <!-- Guía rápida -->
+            <VBox spacing="8"
+                  style="-fx-background-color:#eef2f8; -fx-background-radius:12; -fx-padding:14 16; -fx-border-color:rgba(26,58,92,0.2); -fx-border-radius:12; -fx-border-width:1;">
+                <Label text="ℹ  Guía rápida"
+                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                <Label text="1. Revisa las remisiones recibidas.&#10;2. Haz clic en «Atender» para iniciar la consulta especializada.&#10;3. Documenta la consulta y ordena estudios si aplica.&#10;4. Emite el alta médica al finalizar el tratamiento."
+                       style="-fx-font-size:11px; -fx-text-fill:#43474e; -fx-wrap-text:true;"
+                       wrapText="true"/>
+            </VBox>
+
+        </VBox>
+
+        <!-- ─── PANEL DERECHO: Remisiones recibidas ──────────── -->
+        <VBox HBox.hgrow="ALWAYS" spacing="0" style="-fx-padding:28 28 28 24;">
+
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding:0 0 16 0;">
+                <Label fx:id="tituloListaLabel" text="Remisiones Recibidas"
+                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent;">
+                <VBox fx:id="remisionesView" spacing="12"
+                      style="-fx-padding:0 4 8 4;"/>
+            </ScrollPane>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>

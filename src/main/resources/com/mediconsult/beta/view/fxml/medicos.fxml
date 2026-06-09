@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+
+<!--
+  medicos.fxml — CLINEX Directorio Médico
+  Diseño basado en: stitch_clinex_medical_ui_design/m_dicos_clinex
+  Paleta y estilos: styles.css
+
+  fx:id disponibles para el controller:
+    - topBar              : HBox       → barra superior
+    - searchMedicoField   : TextField  → buscar médico/especialidad
+    - statTotalLabel      : Label      → total médicos
+    - statGuardiaLabel    : Label      → en guardia
+    - statConsultaLabel   : Label      → en consulta
+    - statUrgenciasLabel  : Label      → urgencias
+    - medicosListView     : VBox       → lista de tarjetas de médico
+    - addMedicoBtn        : Button     → FAB "Nuevo Médico"
+    - navPacientesBtn     : Button     → tab Pacientes
+    - navMedicosBtn       : Button     → tab Médicos (activo)
+    - navCitasBtn         : Button     → tab Citas
+    - navDiagnosticoBtn   : Button     → tab Diagnóstico IA
+-->
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="medicosRoot"
+            fx:controller="com.mediconsult.beta.controller.MedicosController"
+            prefWidth="1280"
+            prefHeight="800"
+            style="-fx-background-color:#f8f9ff;"
+            stylesheets="@styles.css">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP APP BAR
+         ═══════════════════════════════════════════════════ -->
+    <top>
+        <HBox fx:id="topBar" styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+
+            <!-- Logo -->
+            <fx:include source="header_logo.fxml"/>
+
+            <!-- Navegación horizontal desktop -->
+            <Region HBox.hgrow="ALWAYS"/>
+            <HBox spacing="4" alignment="CENTER">
+                <Button text="👥  Pacientes"
+                        style="-fx-background-color:transparent; -fx-cursor:hand; -fx-text-fill:#43474e; -fx-font-size:13px; -fx-padding:8 16 8 16; -fx-background-radius:20;"
+                        onAction="#onNavPacientes"/>
+                <Button text="⚕  Médicos"
+                        style="-fx-background-color:transparent; -fx-cursor:hand; -fx-text-fill:#0060aa; -fx-font-weight:bold; -fx-font-size:13px; -fx-padding:8 16 8 16; -fx-background-radius:20;"/>
+                <Button text="📅  Citas"
+                        style="-fx-background-color:transparent; -fx-cursor:hand; -fx-text-fill:#43474e; -fx-font-size:13px; -fx-padding:8 16 8 16; -fx-background-radius:20;"
+                        onAction="#onNavCitas"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Acciones -->
+            <Button text="🔔" styleClass="top-bar-icon-btn" onAction="#onNotificaciones"/>
+            <Button text="⚙" styleClass="top-bar-icon-btn"/>
+            <Label fx:id="avatarCircle"
+                   text="U"
+                   style="-fx-background-color:#54a3fd; -fx-background-radius:20; -fx-min-width:40; -fx-min-height:40; -fx-max-width:40; -fx-max-height:40; -fx-alignment:center; -fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:14px; -fx-cursor:hand;"/>
+        </HBox>
+    </top>
+
+    <!-- CONTENIDO PRINCIPAL -->
+
+
+
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color:transparent; -fx-background:#f8f9ff;">
+            <content>
+                <VBox spacing="0"
+                      style="-fx-background-color:#f8f9ff;">
+                    <padding><Insets top="40" right="48" bottom="120" left="48"/></padding>
+
+                    <!-- ── Encabezado + Búsqueda ──────────────────── -->
+                    <HBox alignment="BOTTOM_LEFT" spacing="24">
+                        <VBox spacing="6" HBox.hgrow="ALWAYS">
+                            <Label text="Directorio Médico" styleClass="label-headline-lg"/>
+                            <Label text="Gestiona y coordina el personal médico de la clínica."
+                                   styleClass="label-body-lg"/>
+                        </VBox>
+                        <!-- Búsqueda -->
+                        <StackPane prefWidth="320">
+                            <TextField fx:id="searchMedicoField"
+                                       promptText="Buscar por nombre o especialidad..."
+                                       styleClass="search-field"
+                                       prefWidth="320"/>
+                            <Label text="🔍"
+                                   style="-fx-font-size:15px; -fx-text-fill:#73777f; -fx-padding:0 0 0 12;"
+                                   StackPane.alignment="CENTER_LEFT"/>
+                        </StackPane>
+                    </HBox>
+
+                    <Region prefHeight="32"/>
+
+                    <!-- ── Fila de estadísticas (4 tarjetas) ───────── -->
+                    <HBox spacing="20">
+                        <!-- Total médicos -->
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8">
+                            <HBox alignment="CENTER_LEFT" spacing="0">
+                                <Label text="TOTAL MÉDICOS" styleClass="stat-card-label" HBox.hgrow="ALWAYS"/>
+                                <Label text="🩺" style="-fx-font-size:18px; -fx-text-fill:#0060aa;"/>
+                            </HBox>
+                            <Label fx:id="statTotalLabel" text="0" styleClass="stat-card-value"/>
+                        </VBox>
+                        <!-- En guardia -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:white; -fx-background-radius:16; -fx-border-color:rgba(46,134,222,0.15); -fx-border-radius:16; -fx-border-width:0 0 0 4; -fx-border-color:#1a3a5c rgba(46,134,222,0.15) rgba(46,134,222,0.15) #1a3a5c; -fx-padding:20; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.06),8,0,0,2);">
+                            <HBox alignment="CENTER_LEFT" spacing="0">
+                                <Label text="EN GUARDIA" styleClass="stat-card-label" HBox.hgrow="ALWAYS"/>
+                                <Label text="🌙" style="-fx-font-size:18px;"/>
+                            </HBox>
+                            <Label fx:id="statGuardiaLabel" text="0" styleClass="stat-card-value"/>
+                        </VBox>
+                        <!-- En consulta -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:white; -fx-background-radius:16; -fx-border-color:rgba(46,134,222,0.15); -fx-border-radius:16; -fx-border-width:0 0 0 4; -fx-border-color:#0060aa rgba(46,134,222,0.15) rgba(46,134,222,0.15) #0060aa; -fx-padding:20; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.06),8,0,0,2);">
+                            <HBox alignment="CENTER_LEFT" spacing="0">
+                                <Label text="EN CONSULTA" styleClass="stat-card-label" HBox.hgrow="ALWAYS"/>
+                                <Label text="✅" style="-fx-font-size:18px;"/>
+                            </HBox>
+                            <Label fx:id="statConsultaLabel" text="0" styleClass="stat-card-value"/>
+                        </VBox>
+                        <!-- Urgencias -->
+                        <VBox HBox.hgrow="ALWAYS" spacing="8"
+                              style="-fx-background-color:white; -fx-background-radius:16; -fx-border-color:rgba(46,134,222,0.15); -fx-border-radius:16; -fx-border-width:0 0 0 4; -fx-border-color:#ba1a1a rgba(46,134,222,0.15) rgba(46,134,222,0.15) #ba1a1a; -fx-padding:20; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.06),8,0,0,2);">
+                            <HBox alignment="CENTER_LEFT" spacing="0">
+                                <Label text="URGENCIAS" styleClass="stat-card-label" HBox.hgrow="ALWAYS"/>
+                                <Label text="🚨" style="-fx-font-size:18px;"/>
+                            </HBox>
+                            <Label fx:id="statUrgenciasLabel" text="0" styleClass="stat-card-value"/>
+                        </VBox>
+                    </HBox>
+
+                    <Region prefHeight="32"/>
+
+                    <!-- ── Lista de médicos ───────────────────────── -->
+                    <VBox fx:id="medicosListView" spacing="12">
+
+                        <!--
+                          Cada tarjeta de médico se genera dinámicamente desde el controller.
+                          Template visual (HBox styleClass="item-card"):
+                            ├── HBox (izquierda, avatar + datos)
+                            │     ├── StackPane (avatar-circle, 56x56) → Label inicial
+                            │     └── VBox
+                            │           ├── Label (nombre, item-card-name)
+                            │           ├── HBox → Label (especialidad, chip-neutral) + Label (ubicación)
+                            ├── Region HBox.hgrow=ALWAYS
+                            └── HBox (derecha, estado + acciones)
+                                  ├── Label (status-consulta / status-guardia / status-urgencias / status-descanso)
+                                  └── Button (más opciones)
+
+                          Placeholder estático para FXML preview:
+                        -->
+
+                        <!-- Tarjeta placeholder: En Consulta -->
+                        <HBox styleClass="item-card" alignment="CENTER_LEFT" spacing="16"
+                              style="-fx-border-width:0 0 0 4; -fx-border-color:#0060aa rgba(46,134,222,0.15) rgba(46,134,222,0.15) #0060aa; -fx-background-color:#eff4ff;">
+                            <HBox spacing="16" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                <StackPane minWidth="56" minHeight="56" maxWidth="56" maxHeight="56"
+                                           styleClass="avatar-circle">
+                                    <Label text="T" styleClass="avatar-circle-label"/>
+                                </StackPane>
+                                <VBox spacing="6">
+                                    <Label text="Dr. Alejandro Torres" styleClass="item-card-name"
+                                           style="-fx-font-size:17px;"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT">
+                                        <Label text="CARDIOLOGÍA" styleClass="chip-neutral"/>
+                                        <Label text="📍 Consultorio 302" styleClass="item-card-sub"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox alignment="CENTER_RIGHT" spacing="16">
+                                <Label text="En Consultas" styleClass="status-consulta"/>
+                                <Button text="⋮"
+                                        style="-fx-background-color:transparent; -fx-font-size:18px; -fx-text-fill:#73777f; -fx-cursor:hand; -fx-padding:4 8;"/>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Tarjeta placeholder: Guardia -->
+                        <HBox styleClass="item-card" alignment="CENTER_LEFT" spacing="16">
+                            <HBox spacing="16" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                <StackPane minWidth="56" minHeight="56" maxWidth="56" maxHeight="56"
+                                           styleClass="avatar-circle">
+                                    <Label text="V" styleClass="avatar-circle-label"/>
+                                </StackPane>
+                                <VBox spacing="6">
+                                    <Label text="Dra. Elena Vargas" styleClass="item-card-name"
+                                           style="-fx-font-size:17px;"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT">
+                                        <Label text="MEDICINA INTERNA" styleClass="chip-neutral"/>
+                                        <Label text="📍 Planta Baja - Triaje" styleClass="item-card-sub"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox alignment="CENTER_RIGHT" spacing="16">
+                                <Label text="🌙  Guardia" styleClass="status-guardia"/>
+                                <Button text="⋮"
+                                        style="-fx-background-color:transparent; -fx-font-size:18px; -fx-text-fill:#73777f; -fx-cursor:hand; -fx-padding:4 8;"/>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Tarjeta placeholder: Urgencias -->
+                        <HBox styleClass="item-card" alignment="CENTER_LEFT" spacing="16"
+                              style="-fx-border-width:0 0 0 4; -fx-border-color:#ba1a1a rgba(46,134,222,0.15) rgba(46,134,222,0.15) #ba1a1a; -fx-background-color:rgba(186,26,26,0.04);">
+                            <HBox spacing="16" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                <StackPane minWidth="56" minHeight="56" maxWidth="56" maxHeight="56"
+                                           style="-fx-background-color:#ba1a1a; -fx-background-radius:28; -fx-alignment:center;">
+                                    <Label text="R" style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:white;"/>
+                                </StackPane>
+                                <VBox spacing="6">
+                                    <Label text="Dr. Martín Ruiz" styleClass="item-card-name"
+                                           style="-fx-font-size:17px;"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT">
+                                        <Label text="CIRUGÍA GENERAL" styleClass="chip-neutral"/>
+                                        <Label text="📍 Quirófano 2" styleClass="item-card-sub"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox alignment="CENTER_RIGHT" spacing="16">
+                                <Label text="🚨  Urgencias" styleClass="status-urgencias"/>
+                                <Button text="⋮"
+                                        style="-fx-background-color:transparent; -fx-font-size:18px; -fx-text-fill:#73777f; -fx-cursor:hand; -fx-padding:4 8;"/>
+                            </HBox>
+                        </HBox>
+
+                        <!-- Tarjeta placeholder: Descanso -->
+                        <HBox styleClass="item-card" alignment="CENTER_LEFT" spacing="16"
+                              style="-fx-opacity:0.75;">
+                            <HBox spacing="16" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                <StackPane minWidth="56" minHeight="56" maxWidth="56" maxHeight="56"
+                                           style="-fx-background-color:#c3c6cf; -fx-background-radius:28; -fx-alignment:center;">
+                                    <Label text="M" style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:white;"/>
+                                </StackPane>
+                                <VBox spacing="6">
+                                    <Label text="Dra. Sofía Mendes" styleClass="item-card-name"
+                                           style="-fx-font-size:17px;"/>
+                                    <HBox spacing="12" alignment="CENTER_LEFT">
+                                        <Label text="PEDIATRÍA" styleClass="chip-neutral"/>
+                                        <Label text="📍 Fuera de turno" styleClass="item-card-sub"/>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <HBox alignment="CENTER_RIGHT" spacing="16">
+                                <Label text="☕  Descanso" styleClass="status-descanso"/>
+                                <Button text="⋮"
+                                        style="-fx-background-color:transparent; -fx-font-size:18px; -fx-text-fill:#73777f; -fx-cursor:hand; -fx-padding:4 8;"/>
+                            </HBox>
+                        </HBox>
+
+                    </VBox>
+
+                </VBox>
+            </content>
+        </ScrollPane>
+    </center>
+
+    <!-- ═══════════════════════════════════════════════════
+         BOTTOM: FAB + Nav
+         ═══════════════════════════════════════════════════ -->
+    <bottom>
+        <StackPane style="-fx-background-color:transparent; -fx-padding:0 0 20 0;"
+                   pickOnBounds="false">
+
+            <!-- Navegación inferior (solo móvil / siempre visible aquí) -->
+            <HBox fx:id="bottomNav"
+                  styleClass="bottom-nav"
+                  alignment="CENTER"
+                  spacing="4"
+                  maxWidth="700"
+                  StackPane.alignment="BOTTOM_CENTER"
+                  style="-fx-background-color:#002444; -fx-background-radius:30; -fx-padding:10 24 10 24; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.25),16,0,0,4); -fx-translate-y:-20;">
+
+                <Button fx:id="navPacientesBtn"
+                        text="👥  Pacientes"
+                        styleClass="nav-tab"
+                        onAction="#onNavPacientes"/>
+                <Button fx:id="navMedicosBtn"
+                        text="⚕  Médicos"
+                        styleClass="nav-tab-active"
+                        onAction="#onNavMedicos"/>
+                <Button fx:id="navCitasBtn"
+                        text="📅  Citas"
+                        styleClass="nav-tab"
+                        onAction="#onNavCitas"/>
+                <Button fx:id="navRemisionesBtn"
+                        text="🔗  Remisiones"
+                        styleClass="nav-tab"
+                        onAction="#onNavRemisiones"/>
+                <Button fx:id="navListaEsperaBtn"
+                        text="⏳  Lista de Espera"
+                        styleClass="nav-tab"
+                        onAction="#onNavListaEspera"/>
+            </HBox>
+
+            <!-- FAB: Nuevo Médico -->
+            <Button fx:id="addMedicoBtn"
+                    text="+ Nuevo Médico"
+                    styleClass="fab-extended"
+                    StackPane.alignment="BOTTOM_RIGHT"
+                    style="-fx-translate-x:-40; -fx-translate-y:-80;"
+                    onAction="#onAddMedico"/>
+
+        </StackPane>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+
+<!--
+  citas.fxml — CLINEX Gestión de Citas
+  Diseño basado en: stitch_clinex_medical_ui_design/citas_clinex
+  Paleta y estilos: styles.css
+
+  fx:id disponibles para el controller:
+    - topBar              : HBox         → barra superior
+    - calendarMonthLabel  : Label        → "Mayo 2026" (mes actual)
+    - prevMonthBtn        : Button       → mes anterior
+    - nextMonthBtn        : Button       → mes siguiente
+    - calendarGrid        : GridPane     → grid de días del mes (7 columnas)
+    - citasHoyLabel       : Label        → número de citas del día seleccionado
+    - citasListView       : VBox         → lista de tarjetas de cita del día
+    - newAppointmentBtn   : Button       → FAB / botón "Agendar Cita"
+    - scheduleModal       : StackPane    → overlay del modal de nueva cita
+    - modalPacienteCombo  : ComboBox     → selector de paciente
+    - modalMedicoCombo    : ComboBox     → selector de médico/especialidad
+    - modalFechaField     : DatePicker   → selector de fecha
+    - modalHoraField      : TextField    → input de hora
+    - modalConfirmBtn     : Button       → confirmar nueva cita
+    - modalCancelBtn      : Button       → cancelar / cerrar modal
+    - navPacientesBtn     : Button       → tab Pacientes
+    - navMedicosBtn       : Button       → tab Médicos
+    - navCitasBtn         : Button       → tab Citas (activo)
+    - navDiagnosticoBtn   : Button       → tab Diagnóstico IA
+-->
+
+<StackPane xmlns="http://javafx.com/javafx/17"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:id="citasRoot"
+           fx:controller="com.mediconsult.beta.controller.CitasController"
+           prefWidth="1280"
+           prefHeight="800"
+           stylesheets="@styles.css">
+
+    <!-- ═══════════════════════════════════════════════════
+         CAPA PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <BorderPane style="-fx-background-color:#f0f4f8;">
+
+        <!-- TOP APP BAR -->
+        <top>
+            <HBox fx:id="topBar" styleClass="top-bar" alignment="CENTER_LEFT" spacing="16"
+                  style="-fx-background-color:#f8f9ff;">
+
+                <fx:include source="header_logo.fxml"/>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button text="🔔" styleClass="top-bar-icon-btn" onAction="#onNotificaciones"/>
+                <Button text="⚙" styleClass="top-bar-icon-btn"/>
+                <Label fx:id="avatarCircle"
+                       text="U"
+                       style="-fx-background-color:#54a3fd; -fx-background-radius:20; -fx-min-width:40; -fx-min-height:40; -fx-max-width:40; -fx-max-height:40; -fx-alignment:center; -fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:14px; -fx-cursor:hand;"/>
+            </HBox>
+        </top>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <center>
+            <VBox style="-fx-background-color:#f0f4f8;" spacing="0"
+                  VBox.vgrow="ALWAYS">
+                <padding><Insets top="32" right="48" bottom="32" left="48"/></padding>
+
+                <!-- Encabezado -->
+                <VBox spacing="6">
+                    <Label text="Gestión de Citas"
+                           styleClass="label-headline-lg"
+                           style="-fx-text-fill:#002444;"/>
+                    <Label text="Organiza y administra la agenda médica."
+                           styleClass="label-body-lg"/>
+                </VBox>
+
+                <Region prefHeight="28"/>
+
+                <!-- Layout principal: 2 columnas -->
+                <HBox spacing="24" VBox.vgrow="ALWAYS">
+
+                    <!-- ── Columna izquierda: Calendario (35%) ──── -->
+                    <VBox spacing="16" minWidth="280" maxWidth="340" HBox.hgrow="NEVER">
+
+                        <!-- Widget de Calendario -->
+                        <VBox styleClass="calendar-card" spacing="12">
+
+                            <!-- Header del calendario -->
+                            <HBox alignment="CENTER_LEFT" spacing="0">
+                                <Label fx:id="calendarMonthLabel"
+                                       text="Mayo 2026"
+                                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#002444;"
+                                       HBox.hgrow="ALWAYS"/>
+                                <Button fx:id="prevMonthBtn"
+                                        text="‹"
+                                        style="-fx-background-color:transparent; -fx-font-size:18px; -fx-text-fill:#43474e; -fx-cursor:hand; -fx-padding:4 8; -fx-background-radius:6;"
+                                        onAction="#onPrevMonth"/>
+                                <Button fx:id="nextMonthBtn"
+                                        text="›"
+                                        style="-fx-background-color:transparent; -fx-font-size:18px; -fx-text-fill:#43474e; -fx-cursor:hand; -fx-padding:4 8; -fx-background-radius:6;"
+                                        onAction="#onNextMonth"/>
+                            </HBox>
+
+                            <!-- Días de la semana -->
+                            <GridPane hgap="2" vgap="2">
+                                <Label text="LU" styleClass="calendar-day-label"
+                                       GridPane.columnIndex="0" GridPane.rowIndex="0" minWidth="36"/>
+                                <Label text="MA" styleClass="calendar-day-label"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="0" minWidth="36"/>
+                                <Label text="MI" styleClass="calendar-day-label"
+                                       GridPane.columnIndex="2" GridPane.rowIndex="0" minWidth="36"/>
+                                <Label text="JU" styleClass="calendar-day-label"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="0" minWidth="36"/>
+                                <Label text="VI" styleClass="calendar-day-label"
+                                       GridPane.columnIndex="4" GridPane.rowIndex="0" minWidth="36"/>
+                                <Label text="SA" styleClass="calendar-day-label"
+                                       GridPane.columnIndex="5" GridPane.rowIndex="0" minWidth="36"/>
+                                <Label text="DO" styleClass="calendar-day-label"
+                                       GridPane.columnIndex="6" GridPane.rowIndex="0" minWidth="36"/>
+                            </GridPane>
+
+                            <!--
+                              Grid de días del mes — se genera dinámicamente desde el controller.
+                              Usar fx:id="calendarGrid" para llenado por código.
+
+                              Ejemplo de celdas que el controller inserta:
+                                - día normal:    Button (styleClass="calendar-day-btn")
+                                - día de hoy:    StackPane → Button (styleClass="calendar-day-today")
+                                - día seleccionado: Button (styleClass="calendar-day-selected")
+                                - otro mes:      Label (styleClass="calendar-day-other-month")
+                            -->
+                            <GridPane fx:id="calendarGrid"
+                                      hgap="2"
+                                      vgap="2"
+                                      minHeight="200"/>
+                        </VBox>
+
+                        <!-- Mini stat: Citas hoy -->
+                        <HBox styleClass="calendar-card" alignment="CENTER_LEFT" spacing="0">
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="CITAS HOY" styleClass="stat-card-label"/>
+                                <Label fx:id="citasHoyLabel" text="0"
+                                       styleClass="stat-card-value"/>
+                            </VBox>
+                            <Label text="📈"
+                                   style="-fx-font-size:28px; -fx-background-color:#eff4ff; -fx-background-radius:24; -fx-padding:12; -fx-text-fill:#2E86DE;"/>
+                        </HBox>
+
+                    </VBox>
+
+                    <!-- ── Columna derecha: Solicitudes + Lista de citas (65%) ── -->
+                    <VBox HBox.hgrow="ALWAYS" spacing="16">
+
+                        <!-- ── Sección: Solicitudes pendientes ── -->
+                        <VBox spacing="8">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <Label text="Solicitudes de Cita"
+                                       style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#002444;"
+                                       HBox.hgrow="ALWAYS"/>
+                                <Label fx:id="solicitudesCountLabel" text="0"
+                                       style="-fx-background-color:#FEF3C7; -fx-background-radius:12; -fx-padding:2 12; -fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                                <Label text="pendientes de revisión"
+                                       style="-fx-font-size:12px; -fx-text-fill:#73777f;"/>
+                            </HBox>
+                            <ScrollPane fitToWidth="true" prefHeight="190" maxHeight="190"
+                                        style="-fx-background-color:transparent; -fx-background:#f0f4f8;">
+                                <content>
+                                    <VBox fx:id="solicitudesView" spacing="8">
+                                        <padding><Insets top="0" right="0" bottom="4" left="0"/></padding>
+                                    </VBox>
+                                </content>
+                            </ScrollPane>
+                        </VBox>
+
+                        <!-- Separador -->
+                        <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                        <!-- ── Sección: Citas del día ── -->
+                        <HBox alignment="CENTER_LEFT" spacing="0">
+                            <Label text="Citas del Día"
+                                   style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#002444;"
+                                   HBox.hgrow="ALWAYS"/>
+                            <Button text="FILTRAR"
+                                    style="-fx-background-color:transparent; -fx-border-color:rgba(46,134,222,0.3); -fx-border-radius:20; -fx-border-width:1; -fx-text-fill:#002444; -fx-font-size:11px; -fx-font-weight:bold; -fx-padding:6 16; -fx-cursor:hand;"/>
+                        </HBox>
+
+                        <!--
+                          Lista de citas — se llena dinámicamente desde el controller.
+                          Template visual de una tarjeta de cita (HBox styleClass="appointment-card"):
+                            ├── VBox (hora + duración, minWidth=90)
+                            │     ├── Label (hora, styleClass="time-chip")
+                            │     └── Label (duración, body-md)
+                            ├── StackPane (avatar, 48x48, rounded)
+                            │     └── Label (inicial del paciente)
+                            ├── VBox HBox.hgrow=ALWAYS
+                            │     ├── Label (nombre, item-card-name)
+                            │     └── Label (tipo consulta + médico, body-md)
+                            └── VBox (estado + acciones)
+                                  ├── Label (status-pending / status-completed / status-cancelled)
+                                  └── HBox (botones editar/cancelar, visible on hover)
+
+                          El borde izquierdo de la tarjeta varía por estado:
+                            pending:   -fx-border-color:#F59E0B ...
+                            completed: -fx-border-color:#0EA5E9 ...
+                            cancelled: -fx-border-color:#EF4444 ...
+                        -->
+                        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                                    style="-fx-background-color:transparent; -fx-background:#f0f4f8;">
+                            <content>
+                                <VBox fx:id="citasListView" spacing="12">
+                                    <padding><Insets top="0" right="0" bottom="80" left="0"/></padding>
+
+                                    <!-- Cita placeholder: Pendiente -->
+                                    <HBox styleClass="appointment-card" alignment="CENTER_LEFT" spacing="16"
+                                          style="-fx-border-width:0 0 0 4; -fx-border-color:#F59E0B rgba(46,134,222,0.15) rgba(46,134,222,0.15) #F59E0B;">
+                                        <VBox alignment="CENTER" minWidth="90" spacing="3">
+                                            <Label text="09:00 AM" styleClass="time-chip"/>
+                                            <Label text="30 min" styleClass="label-body-md"/>
+                                        </VBox>
+                                        <StackPane minWidth="48" minHeight="48" maxWidth="48" maxHeight="48"
+                                                   style="-fx-background-color:#e5eeff; -fx-background-radius:24; -fx-alignment:center;">
+                                            <Label text="CM"
+                                                   style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#002444;"/>
+                                        </StackPane>
+                                        <VBox HBox.hgrow="ALWAYS" spacing="4">
+                                            <Label text="Carlos Mendoza" styleClass="item-card-name"/>
+                                            <Label text="ℹ  Consulta General - Dr. Ruiz" styleClass="item-card-sub"/>
+                                        </VBox>
+                                        <VBox alignment="TOP_RIGHT" spacing="8">
+                                            <Label text="Pendiente" styleClass="status-pending"/>
+                                            <HBox spacing="4">
+                                                <Button text="✏"
+                                                        style="-fx-background-color:transparent; -fx-font-size:15px; -fx-text-fill:#43474e; -fx-cursor:hand; -fx-padding:4;"/>
+                                                <Button text="✕"
+                                                        style="-fx-background-color:transparent; -fx-font-size:15px; -fx-text-fill:#EF4444; -fx-cursor:hand; -fx-padding:4;"/>
+                                            </HBox>
+                                        </VBox>
+                                    </HBox>
+
+                                    <!-- Cita placeholder: Completada -->
+                                    <HBox styleClass="appointment-card" alignment="CENTER_LEFT" spacing="16"
+                                          style="-fx-border-width:0 0 0 4; -fx-border-color:#0EA5E9 rgba(46,134,222,0.15) rgba(46,134,222,0.15) #0EA5E9;">
+                                        <VBox alignment="CENTER" minWidth="90" spacing="3">
+                                            <Label text="10:30 AM" styleClass="time-chip"/>
+                                            <Label text="45 min" styleClass="label-body-md"/>
+                                        </VBox>
+                                        <StackPane minWidth="48" minHeight="48" maxWidth="48" maxHeight="48"
+                                                   style="-fx-background-color:#e5eeff; -fx-background-radius:24; -fx-alignment:center;">
+                                            <Label text="LF"
+                                                   style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#002444;"/>
+                                        </StackPane>
+                                        <VBox HBox.hgrow="ALWAYS" spacing="4">
+                                            <Label text="Lucia Fernandez" styleClass="item-card-name"/>
+                                            <Label text="❤  Revisión Cardiológica - Dra. Silva" styleClass="item-card-sub"/>
+                                        </VBox>
+                                        <VBox alignment="TOP_RIGHT" spacing="8">
+                                            <Label text="Completada" styleClass="status-completed"/>
+                                        </VBox>
+                                    </HBox>
+
+                                    <!-- Cita placeholder: Cancelada -->
+                                    <HBox styleClass="appointment-card" alignment="CENTER_LEFT" spacing="16"
+                                          style="-fx-border-width:0 0 0 4; -fx-border-color:#EF4444 rgba(46,134,222,0.15) rgba(46,134,222,0.15) #EF4444; -fx-opacity:0.7; -fx-background-color:rgba(249,248,250,0.7);">
+                                        <VBox alignment="CENTER" minWidth="90" spacing="3">
+                                            <Label text="11:45 AM"
+                                                   style="-fx-background-color:#f0f0f0; -fx-background-radius:6; -fx-padding:4 10; -fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#9ca3af; -fx-strikethrough:true;"/>
+                                        </VBox>
+                                        <StackPane minWidth="48" minHeight="48" maxWidth="48" maxHeight="48"
+                                                   style="-fx-background-color:#e0e0e0; -fx-background-radius:24; -fx-alignment:center;">
+                                            <Label text="👤"
+                                                   style="-fx-font-size:20px; -fx-text-fill:#9ca3af;"/>
+                                        </StackPane>
+                                        <VBox HBox.hgrow="ALWAYS" spacing="4">
+                                            <Label text="Roberto Gómez"
+                                                   style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#6b7280; -fx-strikethrough:true;"/>
+                                            <Label text="🩹  Fisioterapia - Dr. Blanco"
+                                                   style="-fx-font-size:13px; -fx-text-fill:#9ca3af;"/>
+                                        </VBox>
+                                        <VBox alignment="TOP_RIGHT" spacing="8">
+                                            <Label text="Cancelada" styleClass="status-cancelled"/>
+                                        </VBox>
+                                    </HBox>
+
+                                </VBox>
+                            </content>
+                        </ScrollPane>
+
+                    </VBox>
+                </HBox>
+
+            </VBox>
+        </center>
+
+        <!-- BOTTOM: Nav + FAB -->
+        <bottom>
+            <StackPane style="-fx-background-color:transparent; -fx-padding:0 0 20 0;"
+                   pickOnBounds="false">
+
+                <HBox fx:id="bottomNav"
+                      styleClass="bottom-nav"
+                      alignment="CENTER"
+                      spacing="4"
+                      maxWidth="700"
+                      StackPane.alignment="BOTTOM_CENTER"
+                      style="-fx-background-color:#002444; -fx-background-radius:30; -fx-padding:10 24 10 24; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.25),16,0,0,4); -fx-translate-y:-20;">
+                    <Button fx:id="navPacientesBtn" text="👥  Pacientes"
+                            styleClass="nav-tab" onAction="#onNavPacientes"/>
+                    <Button fx:id="navMedicosBtn" text="⚕  Médicos"
+                            styleClass="nav-tab" onAction="#onNavMedicos"/>
+                    <Button fx:id="navCitasBtn" text="📅  Citas"
+                            styleClass="nav-tab-active" onAction="#onNavCitas"/>
+                    <Button fx:id="navRemisionesBtn" text="🔗  Remisiones"
+                            styleClass="nav-tab" onAction="#onNavRemisiones"/>
+                    <Button fx:id="navListaEsperaBtn" text="⏳  Lista de Espera"
+                            styleClass="nav-tab" onAction="#onNavListaEspera"/>
+                </HBox>
+
+                <!-- FAB: Agendar Cita -->
+                <Button fx:id="newAppointmentBtn"
+                        text="+ Agendar Cita"
+                        styleClass="fab-extended"
+                        StackPane.alignment="BOTTOM_RIGHT"
+                        style="-fx-translate-x:-40; -fx-translate-y:-80;"
+                        onAction="#onNewAppointment"/>
+
+            </StackPane>
+        </bottom>
+
+    </BorderPane>
+
+    <!-- ═══════════════════════════════════════════════════
+         MODAL: Nueva Cita (oculto por defecto)
+         ═══════════════════════════════════════════════════ -->
+    <StackPane fx:id="scheduleModal"
+               visible="false"
+               managed="false"
+               styleClass="modal-overlay">
+
+        <VBox styleClass="modal-card"
+              spacing="0"
+              maxWidth="500"
+              StackPane.alignment="CENTER">
+
+            <!-- Encabezado del modal -->
+            <HBox alignment="CENTER_LEFT" spacing="0">
+                <Label text="Nueva Cita" styleClass="modal-title" HBox.hgrow="ALWAYS"/>
+                <Button fx:id="modalCancelBtn"
+                        text="✕"
+                        style="-fx-background-color:transparent; -fx-font-size:18px; -fx-text-fill:#43474e; -fx-cursor:hand; -fx-padding:4 8; -fx-background-radius:20;"
+                        onAction="#onCloseModal"/>
+            </HBox>
+
+            <Region prefHeight="20"/>
+
+            <!-- Campo: Paciente -->
+            <VBox spacing="6">
+                <Label text="PACIENTE" styleClass="field-label"/>
+                <ComboBox fx:id="modalPacienteCombo"
+                          promptText="Seleccionar paciente..."
+                          styleClass="combo-box-clinex"
+                          maxWidth="Infinity"/>
+            </VBox>
+
+            <Region prefHeight="14"/>
+
+            <!-- Campo: Médico -->
+            <VBox spacing="6">
+                <Label text="MÉDICO / ESPECIALIDAD" styleClass="field-label"/>
+                <ComboBox fx:id="modalMedicoCombo"
+                          promptText="Seleccionar médico..."
+                          styleClass="combo-box-clinex"
+                          maxWidth="Infinity"/>
+            </VBox>
+
+            <Region prefHeight="14"/>
+
+            <!-- Fecha y Hora en una fila -->
+            <HBox spacing="14">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="FECHA" styleClass="field-label"/>
+                    <DatePicker fx:id="modalFechaField"
+                                styleClass="combo-box-clinex"
+                                maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="HORA" styleClass="field-label"/>
+                    <TextField fx:id="modalHoraField"
+                               promptText="ej. 09:30"
+                               styleClass="text-field-clinex"
+                               maxWidth="Infinity"/>
+                </VBox>
+            </HBox>
+
+            <Region prefHeight="24"/>
+
+            <!-- Botones del modal -->
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Cancelar"
+                        styleClass="btn-secondary"
+                        onAction="#onCloseModal"/>
+                <Button fx:id="modalConfirmBtn"
+                        text="Confirmar Cita"
+                        styleClass="btn-primary"
+                        onAction="#onConfirmAppointment"/>
+            </HBox>
+
+        </VBox>
+    </StackPane>
+
+</StackPane>

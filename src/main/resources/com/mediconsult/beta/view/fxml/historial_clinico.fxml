@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  historial_clinico.fxml — CLINEX Patient Clinical History
+  Controller: HistorialClinicoController
+  Secciones: Consultas Generales, Consultas Especializadas, Diagnósticos IA, Órdenes, Remisiones
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.HistorialClinicoController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Historial Clínico Completo" style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="← Volver"
+                onAction="#onVolver"
+                style="-fx-background-color:transparent; -fx-border-color:rgba(46,134,222,0.35); -fx-border-radius:10; -fx-background-radius:10; -fx-text-fill:#002444; -fx-font-weight:bold; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Resumen del paciente ─────────── -->
+        <VBox prefWidth="300" minWidth="240" spacing="20"
+              style="-fx-padding:28 20 28 28; -fx-background-color:#ffffff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+
+            <!-- Avatar e info -->
+            <VBox spacing="10" alignment="CENTER">
+                <StackPane style="-fx-background-color:#2E86DE; -fx-background-radius:40; -fx-min-width:80; -fx-min-height:80; -fx-max-width:80; -fx-max-height:80; -fx-alignment:center;">
+                    <Label text="👤" style="-fx-font-size:36px;"/>
+                </StackPane>
+                <Label fx:id="nombrePacienteLabel" text="Cargando..."
+                       style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#0b1c30; -fx-text-alignment:center;"
+                       wrapText="true"/>
+                <Label fx:id="edadSangreLabel" text=""
+                       style="-fx-font-size:12px; -fx-text-fill:#73777f;"/>
+            </VBox>
+
+            <!-- Separador -->
+            <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+            <!-- Estadísticas -->
+            <VBox spacing="10">
+                <Label text="RESUMEN CLÍNICO"
+                       style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                <HBox spacing="10">
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statGeneralesLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                        <Label text="GENERALES"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statEspecializadasLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                        <Label text="ESPECIAL."
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                    </VBox>
+                </HBox>
+                <HBox spacing="10">
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statAutodiagLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#6366F1;"/>
+                        <Label text="DIAG. IA"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#4338CA;"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statOrdenesLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                        <Label text="ÓRDENES"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statRemisionesLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                        <Label text="REMIS."
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Separador -->
+            <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+            <!-- Alergias -->
+            <VBox spacing="6">
+                <Label text="ALERGIAS CONOCIDAS"
+                       style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                <Label fx:id="alergiasLabel" text="Ninguna registrada"
+                       style="-fx-font-size:12px; -fx-text-fill:#43474e; -fx-wrap-text:true;"
+                       wrapText="true"/>
+            </VBox>
+
+        </VBox>
+
+        <!-- ─── PANEL DERECHO: Historial completo ─────────────── -->
+        <VBox HBox.hgrow="ALWAYS" spacing="0" style="-fx-padding:0;">
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent;">
+                <VBox spacing="0" style="-fx-padding:28 28 28 24;">
+
+                    <!-- Título -->
+                    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding:0 0 20 0;">
+                        <Label text="Historial Clínico Completo"
+                               style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                    </HBox>
+
+                    <!-- ── Sección 1: Consultas Médicas Generales ── -->
+                    <VBox spacing="12" style="-fx-padding:0 0 20 0;">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="📋" style="-fx-font-size:16px;"/>
+                            <Label text="CONSULTAS MÉDICAS GENERALES"
+                                   style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                        </HBox>
+                        <VBox fx:id="historiasView" spacing="12"/>
+                    </VBox>
+
+                    <!-- Separador -->
+                    <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-height:1; -fx-max-height:1;"/>
+
+                    <!-- ── Sección 2: Consultas Especializadas ── -->
+                    <VBox spacing="12" style="-fx-padding:20 0 20 0;">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="🩺" style="-fx-font-size:16px;"/>
+                            <Label text="CONSULTAS ESPECIALIZADAS"
+                                   style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                        </HBox>
+                        <VBox fx:id="consultasEspView" spacing="12"/>
+                    </VBox>
+
+                    <!-- Separador -->
+                    <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-height:1; -fx-max-height:1;"/>
+
+                    <!-- ── Sección 3: Diagnósticos IA ── -->
+                    <VBox spacing="12" style="-fx-padding:20 0 20 0;">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="🤖" style="-fx-font-size:16px;"/>
+                            <Label text="DIAGNÓSTICOS IA"
+                                   style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#4338CA;"/>
+                        </HBox>
+                        <VBox fx:id="autodiagnosticosView" spacing="12"/>
+                    </VBox>
+
+                    <!-- Separador -->
+                    <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-height:1; -fx-max-height:1;"/>
+
+                    <!-- ── Sección 4: Órdenes Médicas ── -->
+                    <VBox spacing="12" style="-fx-padding:20 0 20 0;">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="💊" style="-fx-font-size:16px;"/>
+                            <Label text="ÓRDENES MÉDICAS"
+                                   style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                        </HBox>
+                        <VBox fx:id="ordenesMedicasView" spacing="12"/>
+                    </VBox>
+
+                    <!-- Separador -->
+                    <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-height:1; -fx-max-height:1;"/>
+
+                    <!-- ── Sección 5: Remisiones ── -->
+                    <VBox spacing="12" style="-fx-padding:20 0 8 0;">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="🔗" style="-fx-font-size:16px;"/>
+                            <Label text="REMISIONES A ESPECIALISTAS"
+                                   style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#1E3A5F;"/>
+                        </HBox>
+                        <VBox fx:id="remisionesView" spacing="12"/>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  portal_paciente.fxml — CLINEX Patient Portal
+  Controller: PortalPacienteController
+
+  Portal inicial del paciente tras iniciar sesión exitosamente.
+  Muestra la información del paciente y enlaces a funcionalidades futuras.
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.PortalPacienteController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <!-- Logo y nombre -->
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <!-- Badge de rol -->
+        <Label fx:id="rolLabel" text="Paciente"
+               style="-fx-background-color:rgba(46,134,222,0.12); -fx-background-radius:20; -fx-padding:4 14 4 14; -fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+        <!-- Cerrar sesión -->
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background:transparent; -fx-background-color:transparent;">
+        <VBox spacing="24" style="-fx-padding:40 48 40 48;">
+
+            <!-- Saludo de bienvenida -->
+            <VBox spacing="6">
+                <Label fx:id="bienvenidaLabel" text="Bienvenido"
+                       style="-fx-font-size:30px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                <Label text="Este es tu portal de paciente en CLINEX."
+                       style="-fx-font-size:15px; -fx-text-fill:#43474e;"/>
+            </VBox>
+
+            <!-- ─── Tarjeta: Información personal ────────────────── -->
+            <VBox styleClass="stat-card" spacing="16">
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <StackPane style="-fx-background-color:#eff4ff; -fx-background-radius:14; -fx-min-width:48; -fx-min-height:48; -fx-max-width:48; -fx-max-height:48; -fx-alignment:center;">
+                        <Label text="👤" style="-fx-font-size:22px;"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="INFORMACIÓN PERSONAL"
+                               style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                        <Label fx:id="nombreCompletoLabel" text="—"
+                               style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                    </VBox>
+                </HBox>
+
+                <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <GridPane hgap="48" vgap="14">
+                    <!-- Fila 1 -->
+                    <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                        <Label text="Correo electrónico"
+                               style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                        <Label fx:id="correoLabel" text="—"
+                               style="-fx-font-size:14px; -fx-font-weight:600; -fx-text-fill:#0b1c30;"/>
+                    </VBox>
+                    <VBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                        <Label text="Teléfono"
+                               style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                        <Label fx:id="telefonoLabel" text="—"
+                               style="-fx-font-size:14px; -fx-font-weight:600; -fx-text-fill:#0b1c30;"/>
+                    </VBox>
+                    <VBox spacing="2" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                        <Label text="Edad"
+                               style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                        <Label fx:id="edadLabel" text="—"
+                               style="-fx-font-size:14px; -fx-font-weight:600; -fx-text-fill:#0b1c30;"/>
+                    </VBox>
+                    <!-- Fila 2 -->
+                    <VBox spacing="2" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                        <Label text="Tipo de Sangre"
+                               style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                        <Label fx:id="tipoSangreLabel" text="—"
+                               style="-fx-font-size:14px; -fx-font-weight:600; -fx-text-fill:#0b1c30;"/>
+                    </VBox>
+                    <VBox spacing="2" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.columnSpan="2">
+                        <Label text="Alergias"
+                               style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                        <Label fx:id="alergiasLabel" text="—"
+                               style="-fx-font-size:14px; -fx-font-weight:600; -fx-text-fill:#0b1c30;"
+                               wrapText="true"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- ─── Funcionalidades próximas ─────────────────────── -->
+            <VBox spacing="12">
+                <Label text="MIS SERVICIOS"
+                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+
+                <HBox spacing="16">
+                    <!-- Solicitar Cita — DISPONIBLE -->
+                    <VBox styleClass="item-card" spacing="10" HBox.hgrow="ALWAYS"
+                          onMouseClicked="#onAgendarCita" style="-fx-cursor:hand;">
+                        <Label text="📩" style="-fx-font-size:28px;"/>
+                        <Label text="Solicitar Cita"
+                               style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        <Label text="Envía una solicitud de cita. El administrador asignará médico, fecha y horario."
+                               style="-fx-font-size:12px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                        <Label text="✓ Disponible"
+                               style="-fx-background-color:#D1FAE5; -fx-background-radius:20; -fx-padding:3 10; -fx-font-size:11px; -fx-text-fill:#065F46; -fx-font-weight:bold;"/>
+                    </VBox>
+
+                    <!-- Diagnóstico IA — DISPONIBLE -->
+                    <VBox styleClass="item-card" spacing="10" HBox.hgrow="ALWAYS"
+                          onMouseClicked="#onAutodiagnostico" style="-fx-cursor:hand;">
+                        <Label text="🤖" style="-fx-font-size:28px;"/>
+                        <Label text="Diagnóstico IA"
+                               style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        <Label text="Obtén una evaluación preliminar de tus síntomas con inteligencia artificial."
+                               style="-fx-font-size:12px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                        <Label text="✓ Disponible"
+                               style="-fx-background-color:#D1FAE5; -fx-background-radius:20; -fx-padding:3 10; -fx-font-size:11px; -fx-text-fill:#065F46; -fx-font-weight:bold;"/>
+                    </VBox>
+
+                    <!-- Historial Clínico — DISPONIBLE -->
+                    <VBox styleClass="item-card" spacing="10" HBox.hgrow="ALWAYS"
+                          onMouseClicked="#onHistorialClinico" style="-fx-cursor:hand;">
+                        <Label text="📋" style="-fx-font-size:28px;"/>
+                        <Label text="Historial Clínico"
+                               style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        <Label text="Consulta tu historial de visitas, diagnósticos y tratamientos."
+                               style="-fx-font-size:12px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                        <Label text="✓ Disponible"
+                               style="-fx-background-color:#D1FAE5; -fx-background-radius:20; -fx-padding:3 10; -fx-font-size:11px; -fx-text-fill:#065F46; -fx-font-weight:bold;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="16">
+                    <!-- Notificaciones — DISPONIBLE -->
+                    <VBox styleClass="item-card" spacing="10" HBox.hgrow="ALWAYS"
+                          onMouseClicked="#onNotificaciones" style="-fx-cursor:hand;">
+                        <Label text="🔔" style="-fx-font-size:28px;"/>
+                        <Label text="Notificaciones"
+                               style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        <Label text="Citas próximas, órdenes activas y estado de tus remisiones."
+                               style="-fx-font-size:12px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                        <Label text="✓ Disponible"
+                               style="-fx-background-color:#D1FAE5; -fx-background-radius:20; -fx-padding:3 10; -fx-font-size:11px; -fx-text-fill:#065F46; -fx-font-weight:bold;"/>
+                    </VBox>
+
+                    <!-- Órdenes médicas — DISPONIBLE -->
+                    <VBox styleClass="item-card" spacing="10" HBox.hgrow="ALWAYS"
+                          onMouseClicked="#onOrdenesMedicas" style="-fx-cursor:hand;">
+                        <Label text="💊" style="-fx-font-size:28px;"/>
+                        <Label text="Órdenes Médicas"
+                               style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        <Label text="Consulta tus medicamentos, exámenes y procedimientos."
+                               style="-fx-font-size:12px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                        <Label text="✓ Disponible"
+                               style="-fx-background-color:#D1FAE5; -fx-background-radius:20; -fx-padding:3 10; -fx-font-size:11px; -fx-text-fill:#065F46; -fx-font-weight:bold;"/>
+                    </VBox>
+
+                    <!-- Remisiones -->
+                    <VBox styleClass="item-card" spacing="10" HBox.hgrow="ALWAYS"
+                          style="-fx-opacity:0.6; -fx-cursor:default;">
+                        <Label text="🏥" style="-fx-font-size:28px;"/>
+                        <Label text="Remisiones"
+                               style="-fx-font-size:15px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        <Label text="Consulta tus remisiones a especialistas."
+                               style="-fx-font-size:12px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                               wrapText="true"/>
+                        <Label text="Próximamente"
+                               style="-fx-background-color:#F3F4F6; -fx-background-radius:20; -fx-padding:3 10; -fx-font-size:11px; -fx-text-fill:#6B7280; -fx-font-weight:bold;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>

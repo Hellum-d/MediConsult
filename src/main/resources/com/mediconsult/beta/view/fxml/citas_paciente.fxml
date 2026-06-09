@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  citas_paciente.fxml — CLINEX Patient Appointment Request
+  Controller: CitasPacienteController
+  Flujo: paciente solo registra motivo → admin asigna médico, fecha y hora.
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.CitasPacienteController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Mis Citas"
+               style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="nombrePacienteLabel" text="Paciente"
+               style="-fx-background-color:rgba(46,134,222,0.12); -fx-background-radius:20; -fx-padding:4 14 4 14; -fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+        <Button text="← Mi Portal"
+                onAction="#onVolverPortal"
+                style="-fx-background-color:transparent; -fx-border-color:rgba(46,134,222,0.35); -fx-border-radius:10; -fx-background-radius:10; -fx-text-fill:#002444; -fx-font-weight:bold; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Solicitar cita (44%) ────────── -->
+        <ScrollPane fitToWidth="true" prefWidth="520" minWidth="380"
+                    style="-fx-background:transparent; -fx-background-color:transparent; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+            <VBox spacing="18" style="-fx-padding:28 28 28 28;">
+
+                <!-- Título -->
+                <VBox spacing="4">
+                    <Label text="📩  Solicitar una Cita Médica"
+                           style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                    <Label text="Describe el motivo de tu consulta. El administrador revisará tu solicitud y te asignará un médico, fecha y horario."
+                           style="-fx-font-size:13px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                           wrapText="true"/>
+                </VBox>
+
+                <!-- ── Campo: Motivo de consulta ── -->
+                <VBox spacing="6">
+                    <HBox spacing="2">
+                        <Label text="Motivo de la consulta" styleClass="form-label"/>
+                        <Label text="*" styleClass="required-star"/>
+                    </HBox>
+                    <TextField fx:id="motivoField"
+                               promptText="Ej: Dolor de cabeza frecuente, control general, revisión de exámenes..."
+                               styleClass="form-field"
+                               maxWidth="1.7976931348623157E308"/>
+                    <Label text="Sé lo más descriptivo posible para que el administrador pueda asignarte el médico adecuado."
+                           styleClass="field-hint"
+                           wrapText="true"/>
+                </VBox>
+
+                <!-- Error label -->
+                <Label fx:id="errorLabel" text=""
+                       styleClass="error-label"
+                       wrapText="true" maxWidth="440"
+                       style="-fx-min-height:18px;"
+                       visible="false" managed="false"/>
+
+                <!-- Nota campos obligatorios -->
+                <HBox spacing="4" alignment="CENTER_LEFT">
+                    <Label text="*" styleClass="required-star"/>
+                    <Label text="Campo obligatorio" styleClass="field-hint"/>
+                </HBox>
+
+                <!-- Botón solicitar -->
+                <Button fx:id="solicitarBtn" text="📩  Enviar Solicitud de Cita"
+                        onAction="#onSolicitarCita"
+                        styleClass="btn-primary"
+                        prefHeight="50" maxWidth="1.7976931348623157E308"
+                        style="-fx-font-size:15px;"/>
+
+                <!-- Aviso informativo -->
+                <VBox style="-fx-background-color:#eff4ff; -fx-background-radius:10; -fx-padding:12 14; -fx-border-color:rgba(46,134,222,0.2); -fx-border-radius:10; -fx-border-width:1;"
+                      spacing="6">
+                    <Label text="ℹ  ¿Cómo funciona el proceso?"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                    <Label text="1. Envías tu solicitud con el motivo de consulta.&#10;2. El administrador la revisa y verifica disponibilidad.&#10;3. Se te asigna un médico, fecha y horario.&#10;4. Recibes la confirmación en tus notificaciones.&#10;&#10;• Las citas son con Médico General. Para especialistas, el médico emitirá una remisión si es necesario."
+                           style="-fx-font-size:11px; -fx-text-fill:#43474e; -fx-wrap-text:true;"
+                           wrapText="true"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+
+        <!-- ─── PANEL DERECHO: Mis citas (56%) ──────────────── -->
+        <VBox HBox.hgrow="ALWAYS" spacing="0" style="-fx-padding:28 28 28 24;">
+
+            <!-- Header con estadísticas -->
+            <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding:0 0 16 0;">
+                <Label text="Mis Citas y Solicitudes"
+                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <!-- Stat: pendientes -->
+                <VBox alignment="CENTER" spacing="2"
+                      style="-fx-background-color:#FEF3C7; -fx-background-radius:12; -fx-padding:8 16; -fx-border-color:#FCD34D; -fx-border-radius:12; -fx-border-width:1;">
+                    <Label fx:id="statPendientesLabel" text="0"
+                           style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                    <Label text="PENDIENTES"
+                           style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                </VBox>
+                <!-- Stat: total -->
+                <VBox alignment="CENTER" spacing="2"
+                      style="-fx-background-color:#eff4ff; -fx-background-radius:12; -fx-padding:8 16; -fx-border-color:rgba(46,134,222,0.25); -fx-border-radius:12; -fx-border-width:1;">
+                    <Label fx:id="statTotalLabel" text="0"
+                           style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#002444;"/>
+                    <Label text="TOTAL"
+                           style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#002444;"/>
+                </VBox>
+            </HBox>
+
+            <!-- Lista de citas -->
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent;">
+                <VBox fx:id="citasListView" spacing="12"
+                      style="-fx-padding:0 4 8 4;"/>
+            </ScrollPane>
+
+        </VBox>
+    </HBox>
+
+</VBox>

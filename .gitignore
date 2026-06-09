@@ -1,0 +1,35 @@
+# ── Build ──
+target/
+*.class
+*.jar
+*.war
+
+# ── IDE ──
+.idea/
+*.iml
+.project
+.classpath
+.settings/
+nbproject/private/
+nb-configuration.xml
+build/
+nbbuild/
+nbdist/
+
+# ── Maven ──
+dependency-reduced-pom.xml
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Logs ──
+*.log
+
+# ── Misc ──
+*.txt
+*.bak
+*.tmp
+stitch_clinex_medical_ui_design/
+data/

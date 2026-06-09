@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  alta_medica.fxml — CLINEX Medical Discharge
+  Controller: AltaMedicaController
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.AltaMedicaController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Alta Médica" style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="infoAltaLabel" text="Alta"
+               style="-fx-font-size:12px; -fx-text-fill:#73777f;"/>
+        <Button text="← Volver a Consulta"
+                onAction="#onVolver"
+                style="-fx-background-color:transparent; -fx-border-color:rgba(26,58,92,0.35); -fx-border-radius:10; -fx-background-radius:10; -fx-text-fill:#1a3a5c; -fx-font-weight:bold; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Paciente + resumen consulta ─── -->
+        <ScrollPane fitToWidth="true" prefWidth="380" minWidth="300"
+                    style="-fx-background:transparent; -fx-background-color:#ffffff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+            <VBox spacing="16" style="-fx-padding:24 20 24 24;">
+
+                <!-- Datos del paciente -->
+                <VBox spacing="10">
+                    <Label text="PACIENTE"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <StackPane style="-fx-background-color:#1a3a5c; -fx-background-radius:28; -fx-min-width:56; -fx-min-height:56; -fx-max-width:56; -fx-max-height:56; -fx-alignment:center;">
+                            <Label text="👤" style="-fx-font-size:24px;"/>
+                        </StackPane>
+                        <VBox spacing="4">
+                            <Label fx:id="nombrePacienteLabel" text="Cargando..."
+                                   style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                            <Label fx:id="correoPacienteLabel" text="—"
+                                   style="-fx-font-size:12px; -fx-text-fill:#73777f;"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="16">
+                        <VBox spacing="2">
+                            <Label text="Edad" style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                            <Label fx:id="edadLabel" text="—"
+                                   style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        </VBox>
+                        <VBox spacing="2">
+                            <Label text="Tipo de Sangre" style="-fx-font-size:11px; -fx-text-fill:#73777f;"/>
+                            <Label fx:id="tipoSangreLabel" text="—"
+                                   style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Resumen de la consulta especializada -->
+                <VBox spacing="8">
+                    <Label text="RESUMEN DE CONSULTA ESPECIALIZADA"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#1a3a5c;"/>
+                    <VBox fx:id="consultaResumenView" spacing="6"/>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Aviso de acción irreversible -->
+                <VBox spacing="6"
+                      style="-fx-background-color:#FEF3C7; -fx-background-radius:10; -fx-padding:12 14; -fx-border-color:#F59E0B; -fx-border-radius:10; -fx-border-width:1;">
+                    <Label text="⚠  Acción irreversible"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                    <Label text="Al emitir el alta, la consulta especializada y la remisión quedarán marcadas como COMPLETADAS. Esta acción no puede deshacerse."
+                           style="-fx-font-size:11px; -fx-text-fill:#92400E; -fx-wrap-text:true;"
+                           wrapText="true"/>
+                </VBox>
+
+            </VBox>
+        </ScrollPane>
+
+        <!-- ─── PANEL DERECHO: Formulario de alta ─────────────── -->
+        <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS"
+                    style="-fx-background:transparent; -fx-background-color:transparent;">
+            <VBox spacing="16" style="-fx-padding:24 28 24 24;">
+
+                <!-- Título -->
+                <Label text="Emisión de Alta Médica"
+                       style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+
+                <!-- ── Diagnóstico Final ── -->
+                <VBox spacing="6">
+                    <Label text="DIAGNÓSTICO FINAL" styleClass="form-section-title"/>
+                    <Label text="Diagnóstico definitivo al momento del alta."
+                           styleClass="field-hint"/>
+                    <TextField fx:id="diagnosticoFinalField"
+                               promptText="Diagnóstico confirmado al cierre de la consulta especializada..."
+                               styleClass="form-field" maxWidth="1.7976931348623157E308"/>
+                </VBox>
+
+                <!-- ── Tipo de Alta ── -->
+                <VBox spacing="6">
+                    <Label text="TIPO DE ALTA" styleClass="form-section-title"/>
+                    <ComboBox fx:id="tipoAltaCombo"
+                              promptText="Seleccionar tipo de alta..."
+                              maxWidth="1.7976931348623157E308"
+                              style="-fx-font-size:13px; -fx-background-radius:8; -fx-border-radius:8; -fx-border-color:rgba(46,134,222,0.3);"/>
+                </VBox>
+
+                <!-- ── Fecha de Alta ── -->
+                <VBox spacing="6">
+                    <Label text="FECHA DE ALTA" styleClass="form-section-title"/>
+                    <DatePicker fx:id="fechaAltaPicker"
+                                maxWidth="220"
+                                style="-fx-font-size:13px; -fx-background-radius:8;"/>
+                </VBox>
+
+                <!-- ── Indicaciones al Paciente ── -->
+                <VBox spacing="6">
+                    <Label text="INDICACIONES AL PACIENTE" styleClass="form-section-title"/>
+                    <Label text="Cuidados, medicación, actividad, signos de alarma."
+                           styleClass="field-hint"/>
+                    <TextArea fx:id="indicacionesPacienteArea"
+                              promptText="Instrucciones de cuidado en casa, medicación, restricciones, próximos controles..."
+                              styleClass="text-area-clinex"
+                              prefRowCount="4" wrapText="true"/>
+                </VBox>
+
+                <!-- ── Indicaciones al Médico Remitente ── -->
+                <VBox spacing="6">
+                    <Label text="INDICACIONES AL MÉDICO REMITENTE" styleClass="form-section-title"/>
+                    <Label text="Continuación del manejo, controles, recomendaciones."
+                           styleClass="field-hint"/>
+                    <TextArea fx:id="indicacionesMedicoArea"
+                              promptText="Resumen del manejo realizado, indicaciones de seguimiento para el médico general..."
+                              styleClass="text-area-clinex"
+                              prefRowCount="3" wrapText="true"/>
+                </VBox>
+
+                <!-- ── Observaciones ── -->
+                <VBox spacing="6">
+                    <Label text="OBSERVACIONES GENERALES" styleClass="form-section-title"/>
+                    <TextArea fx:id="observacionesArea"
+                              promptText="Notas adicionales..."
+                              styleClass="text-area-clinex"
+                              prefRowCount="2" wrapText="true"/>
+                </VBox>
+
+                <!-- Status label -->
+                <Label fx:id="statusLabel" text=""
+                       style="-fx-font-size:12px; -fx-text-fill:#0060aa;"/>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Botón confirmar -->
+                <HBox spacing="12" alignment="CENTER_RIGHT">
+                    <Button fx:id="emitirAltaBtn"
+                            text="✓  Confirmar y Emitir Alta Médica"
+                            onAction="#onEmitirAlta"
+                            styleClass="btn-primary"
+                            prefHeight="50"
+                            style="-fx-font-size:15px; -fx-padding:12 32; -fx-background-color:#065F46;"/>
+                </HBox>
+
+                <!-- Aviso -->
+                <Label text="⚠  Esta acción cerrará la consulta y la remisión. Asegúrate de haber completado todos los campos."
+                       style="-fx-font-size:11px; -fx-text-fill:#92400E; -fx-wrap-text:true;"
+                       wrapText="true"/>
+
+            </VBox>
+        </ScrollPane>
+
+    </HBox>
+
+</VBox>

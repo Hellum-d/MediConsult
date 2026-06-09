@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+
+<!--
+  diagnostico.fxml — CLINEX Diagnóstico Asistido por IA
+  Diseño basado en: stitch_clinex_medical_ui_design/diagn_stico_ia_clinex
+  Paleta y estilos: styles.css
+
+  fx:id disponibles para el controller:
+    - topBar              : HBox       → barra superior
+    - pacienteCombo       : ComboBox   → selector paciente/cita actual
+    - symptomsArea        : TextArea   → síntomas y observaciones clínicas
+    - chipFiebreBtn       : Button     → chip sugerido "Fiebre"
+    - chipDolorBtn        : Button     → chip "Dolor de cabeza"
+    - chipFatigaBtn       : Button     → chip "Fatiga"
+    - generateBtn         : Button     → botón "Generar Diagnóstico"
+    - aiOutputPane        : VBox       → panel derecho de resultados IA
+    - aiStatusLabel       : Label      → etiqueta de estado ("Esperando input...")
+    - aiResultArea        : VBox       → área de resultado del análisis IA
+    - warningBanner       : HBox       → banner de aviso legal/médico
+    - navPacientesBtn     : Button     → tab Pacientes
+    - navMedicosBtn       : Button     → tab Médicos
+    - navCitasBtn         : Button     → tab Citas
+    - navDiagnosticoBtn   : Button     → tab Diagnóstico IA (activo)
+-->
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="diagnosticoRoot"
+            fx:controller="com.mediconsult.beta.controller.DiagnosticoController"
+            prefWidth="1280"
+            prefHeight="800"
+            style="-fx-background-color:#f8f9ff;"
+            stylesheets="@styles.css">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP APP BAR
+         ═══════════════════════════════════════════════════ -->
+    <top>
+        <HBox fx:id="topBar" styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+
+            <!-- Logo -->
+            <fx:include source="header_logo.fxml"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Acciones -->
+            <Button text="🔔" styleClass="top-bar-icon-btn" onAction="#onNotificaciones"/>
+            <Button text="⚙" styleClass="top-bar-icon-btn"/>
+            <Label fx:id="avatarCircle"
+                   text="U"
+                   style="-fx-background-color:#54a3fd; -fx-background-radius:20; -fx-min-width:40; -fx-min-height:40; -fx-max-width:40; -fx-max-height:40; -fx-alignment:center; -fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:14px; -fx-cursor:hand;"/>
+        </HBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         BorderPane interior separa el área scrollable del
+         botón "Generar Diagnóstico" que queda siempre fijo
+         encima de la barra de navegación — nunca solapado.
+         ═══════════════════════════════════════════════════ -->
+    <center>
+        <BorderPane style="-fx-background-color:#f8f9ff;">
+
+            <!-- Área scrollable: formulario + panel IA -->
+            <center>
+                <ScrollPane fitToWidth="true"
+                            style="-fx-background-color:transparent; -fx-background:#f8f9ff;">
+                    <content>
+                        <VBox spacing="0" style="-fx-background-color:#f8f9ff;">
+                            <padding><Insets top="48" right="48" bottom="24" left="48"/></padding>
+
+                            <!-- ── Encabezado de sección ──────────────── -->
+                            <VBox spacing="8">
+                                <HBox spacing="6" alignment="BOTTOM_LEFT">
+                                    <Label text="Diagnóstico Asistido " styleClass="label-headline-lg"
+                                           style="-fx-text-fill:#0f1c2e;"/>
+                                    <Label text="por IA" styleClass="label-headline-lg"
+                                           style="-fx-text-fill:#2E86DE;"/>
+                                </HBox>
+                                <Label text="Utiliza nuestra inteligencia artificial clínica para obtener un análisis preliminar basado en los síntomas del paciente y su historial médico."
+                                       styleClass="label-body-lg"
+                                       wrapText="true"
+                                       maxWidth="700"/>
+                            </VBox>
+
+                            <Region prefHeight="32"/>
+
+                            <!-- ── Layout de dos columnas ─────────────── -->
+                            <HBox spacing="24" alignment="TOP_LEFT">
+
+                                <!-- ── Columna izquierda: Formulario ──── -->
+                                <VBox spacing="16" HBox.hgrow="ALWAYS">
+
+                                    <!-- Card: Selección de paciente/cita -->
+                                    <VBox styleClass="item-card" spacing="10">
+                                        <Label text="PACIENTE / CITA ACTUAL" styleClass="field-label"/>
+                                        <ComboBox fx:id="pacienteCombo"
+                                                  promptText="Seleccionar paciente en consulta..."
+                                                  styleClass="combo-box-clinex"
+                                                  maxWidth="Infinity"/>
+                                    </VBox>
+
+                                    <!-- Card: Síntomas y observaciones -->
+                                    <VBox styleClass="item-card" spacing="12">
+                                        <Label text="SÍNTOMAS Y OBSERVACIONES CLÍNICAS"
+                                               styleClass="field-label"/>
+                                        <TextArea fx:id="symptomsArea"
+                                                  styleClass="text-area-clinex"
+                                                  promptText="Describa los síntomas principales, duración, intensidad y cualquier otra observación relevante. La IA analizará este texto en contexto con el historial del paciente..."
+                                                  wrapText="true"
+                                                  prefRowCount="7"
+                                                  maxWidth="Infinity"/>
+
+                                        <!-- Chips de síntomas sugeridos -->
+                                        <VBox spacing="6">
+                                            <Label text="Síntomas frecuentes:"
+                                                   style="-fx-font-size:11px; -fx-text-fill:#43474e;"/>
+                                            <FlowPane hgap="8" vgap="8">
+                                                <Button fx:id="chipFiebreBtn"
+                                                        text="+ Fiebre"
+                                                        styleClass="chip-symptom"
+                                                        onAction="#onAddSymptomFiebre"/>
+                                                <Button fx:id="chipDolorBtn"
+                                                        text="+ Dolor de cabeza"
+                                                        styleClass="chip-symptom"
+                                                        onAction="#onAddSymptomDolor"/>
+                                                <Button fx:id="chipFatigaBtn"
+                                                        text="+ Fatiga"
+                                                        styleClass="chip-symptom"
+                                                        onAction="#onAddSymptomFatiga"/>
+                                                <Button text="+ Náuseas"
+                                                        styleClass="chip-symptom"
+                                                        onAction="#onAddSymptomNauseas"/>
+                                                <Button text="+ Tos"
+                                                        styleClass="chip-symptom"
+                                                        onAction="#onAddSymptomTos"/>
+                                                <Button text="+ Disnea"
+                                                        styleClass="chip-symptom"
+                                                        onAction="#onAddSymptomDisnea"/>
+                                            </FlowPane>
+                                        </VBox>
+                                    </VBox>
+
+                                </VBox>
+
+                                <!-- ── Columna derecha: Output IA ──────── -->
+                                <VBox fx:id="aiOutputPane"
+                                      styleClass="ai-output-panel"
+                                      spacing="16"
+                                      HBox.hgrow="ALWAYS"
+                                      minHeight="420">
+
+                                    <!-- Encabezado del panel IA -->
+                                    <HBox alignment="CENTER_LEFT" spacing="0">
+                                        <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                                            <Label text="🧠"
+                                                   style="-fx-font-size:20px; -fx-text-fill:#2E86DE;"/>
+                                            <Label text="Análisis de la IA"
+                                                   style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#002444;"/>
+                                        </HBox>
+                                        <Label fx:id="aiStatusLabel"
+                                               text="Esperando input..."
+                                               styleClass="ai-status-label"/>
+                                    </HBox>
+
+                                    <!-- Área de resultado / Estado vacío -->
+                                    <VBox fx:id="aiResultArea"
+                                          VBox.vgrow="ALWAYS"
+                                          style="-fx-background-color:#f0f4f8; -fx-background-radius:10; -fx-padding:20; -fx-border-color:rgba(46,134,222,0.12); -fx-border-radius:10; -fx-border-width:1;"
+                                          alignment="CENTER"
+                                          spacing="12"
+                                          minHeight="300">
+
+                                        <!-- Estado vacío por defecto -->
+                                        <Label text="📊"
+                                               style="-fx-font-size:56px; -fx-opacity:0.45;"/>
+                                        <Label text="Ingrese los síntomas y presione «Generar Diagnóstico» para ver el análisis preliminar."
+                                               styleClass="ai-output-empty"
+                                               wrapText="true"
+                                               maxWidth="300"
+                                               textAlignment="CENTER"/>
+                                        <Label text="El sistema cruzará la información con la base de datos clínica actualizada."
+                                               style="-fx-font-size:12px; -fx-text-fill:rgba(67,71,78,0.45); -fx-text-alignment:center; -fx-wrap-text:true;"
+                                               wrapText="true"
+                                               maxWidth="280"
+                                               textAlignment="CENTER"/>
+                                    </VBox>
+
+                                </VBox>
+
+                            </HBox>
+
+                            <Region prefHeight="28"/>
+
+                            <!-- ── Banner de aviso legal ───────────────── -->
+                            <HBox fx:id="warningBanner" styleClass="warning-banner"
+                                  spacing="14" alignment="TOP_LEFT">
+                                <Label text="⚠"
+                                       style="-fx-font-size:22px; -fx-text-fill:#D97706; -fx-padding:2 0 0 0;"/>
+                                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                    <Label text="Aviso Legal y Médico" styleClass="warning-title"/>
+                                    <Label text="Este sistema de Inteligencia Artificial está diseñado exclusivamente como una herramienta de apoyo a la decisión clínica. No sustituye en ningún caso el juicio profesional, diagnóstico o tratamiento de un médico cualificado. El profesional de la salud es el único responsable de la validación de estos resultados y de la atención final al paciente."
+                                           styleClass="warning-text"
+                                           wrapText="true"
+                                           maxWidth="900"/>
+                                </VBox>
+                            </HBox>
+
+                            <Region prefHeight="20"/>
+
+                        </VBox>
+                    </content>
+                </ScrollPane>
+            </center>
+
+            <!-- ── Botón GENERAR DIAGNÓSTICO — pie fijo ──────────────
+                 Siempre visible entre el formulario y la barra nav.
+                 Nunca puede solaparse con ningún otro elemento.
+                 ─────────────────────────────────────────────────────── -->
+            <bottom>
+                <HBox style="-fx-background-color:#f8f9ff;
+                             -fx-padding:12 48 14 48;
+                             -fx-border-color:rgba(195,198,207,0.4) transparent transparent transparent;
+                             -fx-border-width:1 0 0 0;">
+                    <Button fx:id="generateBtn"
+                            text="⚡  Generar Diagnóstico"
+                            maxWidth="Infinity"
+                            prefHeight="52"
+                            HBox.hgrow="ALWAYS"
+                            style="-fx-background-color:#1a3a5c; -fx-background-radius:12; -fx-text-fill:white; -fx-font-size:16px; -fx-font-weight:bold; -fx-cursor:hand; -fx-effect:dropshadow(gaussian,rgba(46,134,222,0.25),10,0,0,4);"
+                            onAction="#onGenerateDiagnosis"/>
+                </HBox>
+            </bottom>
+
+        </BorderPane>
+    </center>
+
+    <!-- ═══════════════════════════════════════════════════
+         BOTTOM: Navegación inferior
+         ═══════════════════════════════════════════════════ -->
+    <bottom>
+        <StackPane style="-fx-background-color:transparent; -fx-padding:0 0 20 0;"
+                   pickOnBounds="false">
+            <HBox fx:id="bottomNav"
+                  styleClass="bottom-nav"
+                  alignment="CENTER"
+                  spacing="4"
+                  maxWidth="700"
+                  StackPane.alignment="BOTTOM_CENTER"
+                  style="-fx-background-color:#002444; -fx-background-radius:30; -fx-padding:10 24 10 24; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.25),16,0,0,4); -fx-translate-y:-20;">
+
+                <Button fx:id="navPacientesBtn"
+                        text="👥  Pacientes"
+                        styleClass="nav-tab"
+                        onAction="#onNavPacientes"/>
+                <Button fx:id="navMedicosBtn"
+                        text="⚕  Médicos"
+                        styleClass="nav-tab"
+                        onAction="#onNavMedicos"/>
+                <Button fx:id="navCitasBtn"
+                        text="📅  Citas"
+                        styleClass="nav-tab"
+                        onAction="#onNavCitas"/>
+                <Button fx:id="navDiagnosticoBtn"
+                        text="🧠  Diagnóstico IA"
+                        styleClass="nav-tab-active"
+                        onAction="#onNavDiagnostico"/>
+                <Button fx:id="navRemisionesBtn"
+                        text="🔗  Remisiones"
+                        styleClass="nav-tab"
+                        onAction="#onNavRemisiones"/>
+                <Button fx:id="navListaEsperaBtn"
+                        text="⏳  Lista de Espera"
+                        styleClass="nav-tab"
+                        onAction="#onNavListaEspera"/>
+            </HBox>
+        </StackPane>
+    </bottom>
+
+</BorderPane>

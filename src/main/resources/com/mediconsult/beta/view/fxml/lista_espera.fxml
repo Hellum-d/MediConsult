@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  lista_espera.fxml — CLINEX Admin Waiting List
+  Controller: ListaEsperaController
+-->
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="rootPane"
+            fx:controller="com.mediconsult.beta.controller.ListaEsperaController"
+            prefWidth="1280" prefHeight="800"
+            style="-fx-background-color:#f8f9ff;"
+            stylesheets="@styles.css">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP APP BAR
+         ═══════════════════════════════════════════════════ -->
+    <top>
+        <HBox fx:id="topBar" styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+            <fx:include source="header_logo.fxml"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🔔" styleClass="top-bar-icon-btn" onAction="#onNotificaciones"/>
+            <Button text="⚙" styleClass="top-bar-icon-btn"/>
+            <Label fx:id="avatarCircle" text="U"
+                   style="-fx-background-color:#54a3fd; -fx-background-radius:20; -fx-min-width:40; -fx-min-height:40; -fx-max-width:40; -fx-max-height:40; -fx-alignment:center; -fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:14px; -fx-cursor:hand;"/>
+        </HBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <center>
+        <HBox spacing="0">
+
+            <!-- ─── PANEL IZQUIERDO: Resumen del día ──────────── -->
+            <VBox prefWidth="300" minWidth="260" spacing="20"
+                  style="-fx-padding:40 20 120 40; -fx-background-color:#ffffff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+
+                <VBox spacing="6">
+                    <Label text="Lista de Espera" styleClass="label-headline-sm"/>
+                    <Label fx:id="fechaHoyLabel" text=""
+                           style="-fx-font-size:13px; -fx-text-fill:#73777f;"/>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Stats del día -->
+                <VBox spacing="12">
+                    <Label text="RESUMEN HOY"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+
+                    <VBox styleClass="stat-card" spacing="4">
+                        <Label text="EN ESPERA AHORA"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#ba1a1a;"/>
+                        <Label fx:id="statHoyLabel" text="0"
+                               style="-fx-font-size:30px; -fx-font-weight:bold; -fx-text-fill:#ba1a1a;"/>
+                    </VBox>
+
+                    <HBox spacing="10">
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="4" alignment="CENTER">
+                            <Label fx:id="statSemanaLabel" text="0"
+                                   style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#F59E0B;"/>
+                            <Label text="ESTA SEMANA"
+                                   style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                        </VBox>
+                        <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="4" alignment="CENTER">
+                            <Label fx:id="statMedicosLabel" text="0"
+                                   style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                            <Label text="MÉDICOS HOY"
+                                   style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+
+                <!-- Separador -->
+                <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+                <!-- Carga por médico -->
+                <VBox spacing="8">
+                    <Label text="CARGA POR MÉDICO (HOY)"
+                           style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                    <VBox fx:id="cargaMedicosView" spacing="6"/>
+                </VBox>
+
+            </VBox>
+
+            <!-- ─── PANEL DERECHO: Cola de espera ─────────────── -->
+            <VBox HBox.hgrow="ALWAYS" spacing="0">
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background-color:transparent; -fx-background:#f8f9ff;">
+                    <VBox spacing="0" style="-fx-background-color:#f8f9ff;">
+                        <padding><Insets top="40" right="48" bottom="120" left="32"/></padding>
+
+                        <!-- Sección: HOY -->
+                        <VBox spacing="12" style="-fx-padding:0 0 28 0;">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="🚨" style="-fx-font-size:18px;"/>
+                                <Label text="PACIENTES EN ESPERA HOY"
+                                       style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#ba1a1a;"/>
+                            </HBox>
+                            <VBox fx:id="colaHoyView" spacing="10"/>
+                        </VBox>
+
+                        <!-- Separador -->
+                        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-height:1; -fx-max-height:1;"/>
+
+                        <!-- Sección: PRÓXIMA SEMANA -->
+                        <VBox spacing="12" style="-fx-padding:28 0 0 0;">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="📅" style="-fx-font-size:18px;"/>
+                                <Label text="PRÓXIMOS 7 DÍAS"
+                                       style="-fx-font-size:13px; -fx-font-weight:bold; -fx-text-fill:#F59E0B;"/>
+                            </HBox>
+                            <VBox fx:id="colaProximaView" spacing="10"/>
+                        </VBox>
+
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+        </HBox>
+    </center>
+
+    <!-- ═══════════════════════════════════════════════════
+         BOTTOM: Navegación inferior
+         ═══════════════════════════════════════════════════ -->
+    <bottom>
+        <StackPane style="-fx-background-color:transparent; -fx-padding:0 0 20 0;"
+                   pickOnBounds="false">
+            <HBox styleClass="bottom-nav"
+                  alignment="CENTER"
+                  spacing="4"
+                  maxWidth="700"
+                  StackPane.alignment="BOTTOM_CENTER"
+                  style="-fx-background-color:#002444; -fx-background-radius:30; -fx-padding:10 24 10 24; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.25),16,0,0,4); -fx-translate-y:-20;">
+                <Button text="👥  Pacientes"      styleClass="nav-tab"        onAction="#onNavPacientes"/>
+                <Button text="⚕  Médicos"         styleClass="nav-tab"        onAction="#onNavMedicos"/>
+                <Button text="📅  Citas"           styleClass="nav-tab"        onAction="#onNavCitas"/>
+                <Button text="🔗  Remisiones"      styleClass="nav-tab"        onAction="#onNavRemisiones"/>
+                <Button text="⏳  Lista de Espera" styleClass="nav-tab-active" onAction="#onNavListaEspera"/>
+            </HBox>
+        </StackPane>
+    </bottom>
+
+</BorderPane>

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+
+<!--
+  recuperar.fxml — CLINEX Password Recovery Screen
+  Controller: RecuperarController
+
+  Flujo en 2 pasos:
+    - Paso 1 (pasoUnoPane): ingresar username → generar código
+    - Paso 2 (pasoDosPane): ingresar código + nueva contraseña → restablecer
+-->
+
+<HBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.RecuperarController"
+      prefWidth="1280" prefHeight="800"
+      styleClass="login-root"
+      stylesheets="@styles.css">
+
+    <!-- ═══════════════════════════════════════════════════
+         PANEL IZQUIERDO: Branding (55%)
+         ═══════════════════════════════════════════════════ -->
+    <VBox prefWidth="704" minWidth="400"
+          styleClass="branding-pane" spacing="0"
+          HBox.hgrow="ALWAYS">
+
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <ImageView fitHeight="36" preserveRatio="true" smooth="true">
+                <image><Image url="@logo.png"/></image>
+            </ImageView>
+            <Label text="CLINEX" styleClass="brand-title"/>
+        </HBox>
+
+        <Region VBox.vgrow="ALWAYS"/>
+
+        <VBox spacing="20" maxWidth="520">
+            <Label text="Tu acceso, siempre disponible."
+                   styleClass="brand-tagline" wrapText="true" prefWidth="520"/>
+            <Label text="Recupera el acceso a tu cuenta de forma rápida y segura mediante un código de verificación temporal."
+                   styleClass="brand-sub" wrapText="true" prefWidth="520"/>
+        </VBox>
+
+        <Region prefHeight="36"/>
+
+        <VBox spacing="14">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="🔒" style="-fx-font-size:16px;"/>
+                <Label text="Código de verificación de 6 dígitos"
+                       style="-fx-font-size:14px; -fx-text-fill:#43474e;"/>
+            </HBox>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="⏱" style="-fx-font-size:16px;"/>
+                <Label text="Válido por 30 minutos"
+                       style="-fx-font-size:14px; -fx-text-fill:#43474e;"/>
+            </HBox>
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <Label text="🛡" style="-fx-font-size:16px;"/>
+                <Label text="Contraseña cifrada con SHA-256"
+                       style="-fx-font-size:14px; -fx-text-fill:#43474e;"/>
+            </HBox>
+        </VBox>
+
+        <Region prefHeight="32"/>
+    </VBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         PANEL DERECHO: Formulario de Recuperación (45%)
+         ═══════════════════════════════════════════════════ -->
+    <VBox alignment="CENTER"
+          prefWidth="576" minWidth="360"
+          styleClass="login-panel"
+          HBox.hgrow="NEVER">
+
+        <!-- Card principal -->
+        <VBox styleClass="login-card" maxWidth="440" spacing="0" alignment="TOP_CENTER">
+
+            <!-- ─── PASO 1: Solicitar código ──────────────── -->
+            <VBox fx:id="pasoUnoPane" spacing="0">
+
+                <VBox spacing="6" alignment="CENTER">
+                    <Label text="Recuperar Contraseña" styleClass="login-title"/>
+                    <Label text="Ingresa tu nombre de usuario para recibir el código"
+                           styleClass="login-subtitle" wrapText="true" maxWidth="360"
+                           style="-fx-text-alignment:center;"/>
+                </VBox>
+
+                <Region prefHeight="24"/>
+
+                <!-- Username -->
+                <VBox spacing="6">
+                    <Label text="NOMBRE DE USUARIO" styleClass="field-label"/>
+                    <TextField fx:id="usernameRecuperarField"
+                               promptText="ej. paciente_01 o admin"
+                               styleClass="text-field-clinex"
+                               maxWidth="400"/>
+                </VBox>
+
+                <Region prefHeight="8"/>
+
+                <!-- Banner informativo -->
+                <VBox style="-fx-background-color:#eff4ff; -fx-background-radius:10; -fx-padding:12 14; -fx-border-color:rgba(46,134,222,0.2); -fx-border-radius:10; -fx-border-width:1;"
+                      maxWidth="400">
+                    <Label text="💡  Código temporal"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                    <Label text="Se generará un código de 6 dígitos que deberás copiar e ingresar en el siguiente paso. Válido por 30 minutos."
+                           style="-fx-font-size:11px; -fx-text-fill:#43474e; -fx-wrap-text:true;"
+                           maxWidth="360" wrapText="true"/>
+                </VBox>
+
+                <Region prefHeight="8"/>
+
+                <!-- Error paso 1 -->
+                <Label fx:id="errorPasoUnoLabel" text=""
+                       styleClass="error-label"
+                       wrapText="true" maxWidth="400"
+                       style="-fx-min-height:18px;"
+                       visible="false" managed="false"/>
+
+                <Region prefHeight="12"/>
+
+                <!-- Botón generar código -->
+                <Button fx:id="generarCodigoBtn" text="Generar Código de Recuperación"
+                        onAction="#onGenerarCodigo"
+                        styleClass="btn-primary"
+                        maxWidth="400" prefWidth="400" prefHeight="48"
+                        style="-fx-font-size:14px;"/>
+
+                <Region prefHeight="16"/>
+
+                <HBox alignment="CENTER" spacing="4">
+                    <Label text="¿Recuerdas tu contraseña?"
+                           style="-fx-font-size:13px; -fx-text-fill:#73777f;"/>
+                    <Button text="Iniciar sesión"
+                            onAction="#onVolverLogin"
+                            style="-fx-background-color:transparent; -fx-border-color:transparent; -fx-font-size:13px; -fx-text-fill:#2E86DE; -fx-font-weight:600; -fx-cursor:hand; -fx-padding:0;"/>
+                </HBox>
+            </VBox>
+
+            <!-- ─── PASO 2: Restablecer contraseña ───────── -->
+            <VBox fx:id="pasoDosPane" spacing="0" visible="false" managed="false">
+
+                <VBox spacing="6" alignment="CENTER">
+                    <Label text="Restablecer Contraseña" styleClass="login-title"/>
+                    <Label text="Ingresa el código generado y tu nueva contraseña"
+                           styleClass="login-subtitle" wrapText="true" maxWidth="360"
+                           style="-fx-text-alignment:center;"/>
+                </VBox>
+
+                <Region prefHeight="20"/>
+
+                <!-- Banner con el token generado -->
+                <VBox style="-fx-background-color:#D1FAE5; -fx-background-radius:12; -fx-padding:14 16; -fx-border-color:#6EE7B7; -fx-border-radius:12; -fx-border-width:1;"
+                      maxWidth="400" spacing="6">
+                    <Label text="✅  Código de recuperación generado"
+                           style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#065F46;"/>
+                    <HBox spacing="8" alignment="CENTER_LEFT">
+                        <Label text="Código:" style="-fx-font-size:13px; -fx-text-fill:#065F46;"/>
+                        <Label fx:id="tokenMostradoLabel" text="------"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#065F46; -fx-font-family:'Courier New', monospace;"/>
+                    </HBox>
+                    <Label text="Copia este código antes de continuar. Expira en 30 minutos."
+                           style="-fx-font-size:11px; -fx-text-fill:#065F46; -fx-wrap-text:true;"
+                           wrapText="true" maxWidth="360"/>
+                </VBox>
+
+                <Region prefHeight="16"/>
+
+                <!-- Campo: Código de verificación -->
+                <VBox spacing="6">
+                    <Label text="CÓDIGO DE VERIFICACIÓN" styleClass="field-label"/>
+                    <TextField fx:id="tokenField" promptText="Ingresa el código de 6 dígitos"
+                               styleClass="text-field-clinex" maxWidth="400"
+                               style="-fx-font-family:'Courier New', monospace; -fx-font-size:16px; -fx-font-weight:bold;"/>
+                </VBox>
+
+                <Region prefHeight="14"/>
+
+                <!-- Campo: Nueva contraseña -->
+                <VBox spacing="6">
+                    <Label text="NUEVA CONTRASEÑA" styleClass="field-label"/>
+                    <PasswordField fx:id="nuevaPasswordField" promptText="Mínimo 6 caracteres"
+                                   styleClass="password-field-clinex" maxWidth="400"/>
+                </VBox>
+
+                <Region prefHeight="10"/>
+
+                <!-- Campo: Confirmar nueva contraseña -->
+                <VBox spacing="6">
+                    <Label text="CONFIRMAR CONTRASEÑA" styleClass="field-label"/>
+                    <PasswordField fx:id="confirmarNuevaPasswordField" promptText="Repite la nueva contraseña"
+                                   styleClass="password-field-clinex" maxWidth="400"/>
+                </VBox>
+
+                <Region prefHeight="8"/>
+
+                <!-- Error paso 2 -->
+                <Label fx:id="errorPasoDosLabel" text=""
+                       styleClass="error-label"
+                       wrapText="true" maxWidth="400"
+                       style="-fx-min-height:18px;"
+                       visible="false" managed="false"/>
+
+                <Region prefHeight="12"/>
+
+                <!-- Botón restablecer -->
+                <Button fx:id="resetearBtn" text="Restablecer Contraseña  →"
+                        onAction="#onResetear"
+                        styleClass="btn-primary"
+                        maxWidth="400" prefWidth="400" prefHeight="48"
+                        style="-fx-font-size:14px;"/>
+
+                <Region prefHeight="16"/>
+
+                <HBox alignment="CENTER" spacing="4">
+                    <Label text="¿Recuerdas tu contraseña?"
+                           style="-fx-font-size:13px; -fx-text-fill:#73777f;"/>
+                    <Button text="Iniciar sesión"
+                            onAction="#onVolverLogin"
+                            style="-fx-background-color:transparent; -fx-border-color:transparent; -fx-font-size:13px; -fx-text-fill:#2E86DE; -fx-font-weight:600; -fx-cursor:hand; -fx-padding:0;"/>
+                </HBox>
+            </VBox>
+
+        </VBox>
+    </VBox>
+
+</HBox>

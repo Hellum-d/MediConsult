@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  autodiagnostico_paciente.fxml — CLINEX Patient AI Self-Diagnosis Screen
+  Controller: AutodiagnosticoPacienteController
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.AutodiagnosticoPacienteController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Diagnóstico IA"
+               style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="nombrePacienteLabel" text="Paciente"
+               style="-fx-background-color:rgba(46,134,222,0.12); -fx-background-radius:20; -fx-padding:4 14 4 14; -fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+        <Button text="← Mi Portal"
+                onAction="#onVolverPortal"
+                style="-fx-background-color:transparent; -fx-border-color:rgba(46,134,222,0.35); -fx-border-radius:10; -fx-background-radius:10; -fx-text-fill:#002444; -fx-font-weight:bold; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Entrada de síntomas (42%) ─── -->
+        <VBox prefWidth="520" minWidth="360" spacing="16"
+              style="-fx-padding:28 24 28 28; -fx-background-color:#f8f9ff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+
+            <!-- Título sección -->
+            <VBox spacing="4">
+                <Label text="🩺  Describe tus síntomas"
+                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                <Label text="Sé detallado: incluye cuándo comenzaron, duración e intensidad."
+                       style="-fx-font-size:13px; -fx-text-fill:#73777f; -fx-wrap-text:true;"
+                       wrapText="true"/>
+            </VBox>
+
+            <!-- Chips de síntomas rápidos -->
+            <VBox spacing="8">
+                <Label text="SÍNTOMAS FRECUENTES" styleClass="form-section-title"/>
+                <FlowPane hgap="8" vgap="8">
+                    <Button text="🌡 Fiebre"           onAction="#onChipFiebre"   styleClass="chip-symptom"/>
+                    <Button text="🤕 Dolor de cabeza"  onAction="#onChipDolor"    styleClass="chip-symptom"/>
+                    <Button text="😴 Fatiga"           onAction="#onChipFatiga"   styleClass="chip-symptom"/>
+                    <Button text="🤢 Náuseas"          onAction="#onChipNauseas"  styleClass="chip-symptom"/>
+                    <Button text="😤 Tos"              onAction="#onChipTos"      styleClass="chip-symptom"/>
+                    <Button text="💨 Dificultad resp." onAction="#onChipDisnea"   styleClass="chip-symptom"/>
+                    <Button text="🔙 Dolor dorsal"     onAction="#onChipDorsal"   styleClass="chip-symptom"/>
+                    <Button text="😖 Dolor garganta"   onAction="#onChipGarganta" styleClass="chip-symptom"/>
+                </FlowPane>
+            </VBox>
+
+            <!-- Área de texto síntomas -->
+            <VBox spacing="6" VBox.vgrow="ALWAYS">
+                <Label text="DESCRIPCIÓN DE SÍNTOMAS *" styleClass="field-label"/>
+                <TextArea fx:id="symptomsArea"
+                          promptText="Ej: Llevo 2 días con fiebre de 38°C, dolor de cabeza intenso en la frente y sensación de fatiga. El dolor empeora por la tarde..."
+                          styleClass="text-area-clinex"
+                          wrapText="true"
+                          prefRowCount="8"
+                          VBox.vgrow="ALWAYS"/>
+            </VBox>
+
+            <!-- Botón generar -->
+            <Button fx:id="generateBtn" text="🔍  Analizar Síntomas"
+                    onAction="#onGenerar"
+                    styleClass="btn-primary"
+                    prefHeight="52" maxWidth="Infinity"
+                    style="-fx-font-size:16px;"/>
+
+            <!-- Banner aviso previo -->
+            <VBox styleClass="warning-banner" spacing="4">
+                <Label text="⚠  Uso responsable del autodiagnóstico" styleClass="warning-title"/>
+                <Label text="Este análisis es orientativo y no reemplaza al médico. Ante síntomas graves, busca atención médica urgente."
+                       styleClass="warning-text" wrapText="true"/>
+            </VBox>
+
+        </VBox>
+
+        <!-- ─── PANEL DERECHO: Resultado + Historial (58%) ──── -->
+        <VBox HBox.hgrow="ALWAYS" spacing="0" style="-fx-padding:0;">
+
+            <!-- Panel resultado IA -->
+            <VBox VBox.vgrow="ALWAYS" spacing="0" style="-fx-padding:28 28 0 24;">
+
+                <!-- Status bar -->
+                <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:0 0 12 0;">
+                    <Label text="ANÁLISIS IA" styleClass="form-section-title"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="aiStatusLabel" text="En espera..."
+                           styleClass="ai-status-label"/>
+                </HBox>
+
+                <!-- Zona de resultados -->
+                <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                            style="-fx-background:transparent; -fx-background-color:transparent;">
+                    <VBox fx:id="aiResultArea" spacing="16" alignment="CENTER"
+                          style="-fx-padding:0 4 8 4; -fx-min-height:300;">
+
+                        <!-- Estado inicial vacío -->
+                        <Label text="🤖" style="-fx-font-size:48px; -fx-opacity:0.25;"/>
+                        <Label text="Describe tus síntomas y presiona «Analizar Síntomas»"
+                               styleClass="ai-output-empty"/>
+                        <Label text="La IA analizará tu descripción y generará un informe clínico preliminar."
+                               style="-fx-font-size:12px; -fx-text-fill:rgba(67,71,78,0.45); -fx-wrap-text:true; -fx-text-alignment:center;"
+                               wrapText="true" maxWidth="360"/>
+
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+
+            <!-- Panel historial previo -->
+            <VBox style="-fx-padding:16 28 24 24; -fx-border-color:rgba(195,198,207,0.4) transparent transparent transparent; -fx-border-width:1 0 0 0; -fx-background-color:#f8f9ff;">
+                <Label text="MIS AUTODIAGNÓSTICOS ANTERIORES"
+                       styleClass="form-section-title"
+                       style="-fx-padding:0 0 10 0;"/>
+                <ScrollPane fitToWidth="true" prefHeight="160" maxHeight="160"
+                            style="-fx-background:transparent; -fx-background-color:transparent;">
+                    <VBox fx:id="historialArea" spacing="6"/>
+                </ScrollPane>
+            </VBox>
+
+        </VBox>
+    </HBox>
+
+</VBox>

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  notificaciones_paciente.fxml — CLINEX Patient Notifications
+  Controller: NotificacionesPacienteController
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.NotificacionesPacienteController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Notificaciones" style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="← Mi Portal"
+                onAction="#onVolver"
+                style="-fx-background-color:transparent; -fx-border-color:rgba(46,134,222,0.35); -fx-border-radius:10; -fx-background-radius:10; -fx-text-fill:#002444; -fx-font-weight:bold; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Resumen ──────────────────────── -->
+        <VBox prefWidth="300" minWidth="240" spacing="20"
+              style="-fx-padding:28 20 28 28; -fx-background-color:#ffffff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+
+            <!-- Avatar e info -->
+            <VBox spacing="10" alignment="CENTER">
+                <StackPane style="-fx-background-color:#2E86DE; -fx-background-radius:40; -fx-min-width:80; -fx-min-height:80; -fx-max-width:80; -fx-max-height:80; -fx-alignment:center;">
+                    <Label text="🔔" style="-fx-font-size:34px;"/>
+                </StackPane>
+                <Label fx:id="nombrePacienteLabel" text="Cargando..."
+                       style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#0b1c30; -fx-text-alignment:center;"
+                       wrapText="true"/>
+                <Label fx:id="totalBadgeLabel" text="0 notificaciones"
+                       style="-fx-background-color:rgba(46,134,222,0.12); -fx-background-radius:20; -fx-padding:4 14; -fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+            </VBox>
+
+            <!-- Separador -->
+            <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+            <!-- Resumen por categoría -->
+            <VBox spacing="10">
+                <Label text="RESUMEN"
+                       style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT"
+                      style="-fx-background-color:#FEE2E2; -fx-background-radius:10; -fx-padding:10 14;">
+                    <Label text="🚨" style="-fx-font-size:16px;"/>
+                    <VBox spacing="1">
+                        <Label text="URGENTES"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#991B1B;"/>
+                        <Label fx:id="statUrgentesLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#ba1a1a;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT"
+                      style="-fx-background-color:#FEF3C7; -fx-background-radius:10; -fx-padding:10 14;">
+                    <Label text="⚠" style="-fx-font-size:16px;"/>
+                    <VBox spacing="1">
+                        <Label text="PENDIENTES"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                        <Label fx:id="statPendientesLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#F59E0B;"/>
+                    </VBox>
+                </HBox>
+
+                <HBox spacing="10" alignment="CENTER_LEFT"
+                      style="-fx-background-color:#DBEAFE; -fx-background-radius:10; -fx-padding:10 14;">
+                    <Label text="ℹ" style="-fx-font-size:16px;"/>
+                    <VBox spacing="1">
+                        <Label text="INFORMATIVAS"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#1E40AF;"/>
+                        <Label fx:id="statInfoLabel" text="0"
+                               style="-fx-font-size:22px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+        </VBox>
+
+        <!-- ─── PANEL DERECHO: Lista de notificaciones ────────── -->
+        <VBox HBox.hgrow="ALWAYS" spacing="0">
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent;">
+                <VBox spacing="0" style="-fx-padding:28 28 28 24;">
+
+                    <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding:0 0 20 0;">
+                        <Label text="Centro de Notificaciones"
+                               style="-fx-font-size:20px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+                    </HBox>
+
+                    <VBox fx:id="notificacionesView" spacing="12"/>
+
+                </VBox>
+            </ScrollPane>
+        </VBox>
+
+    </HBox>
+
+</VBox>

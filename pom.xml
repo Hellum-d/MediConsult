@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.mediconsult</groupId>
+    <artifactId>MediConsult-Beta</artifactId>
+    <version>0.2.0</version>
+    <packaging>jar</packaging>
+
+    <name>MediConsult-Beta</name>
+    <description>
+        Sistema hospitalario Clinex con persistencia MySQL via JDBC puro.
+        Arquitectura en capas: model, dao, service, view.
+    </description>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mainClass>com.mediconsult.beta.Main</mainClass>
+        <!-- JavaFX: misma versión que el JDK (17 LTS) -->
+        <javafx.version>17.0.11</javafx.version>
+    </properties>
+
+    <dependencies>
+        <!-- MySQL JDBC Driver — conexión a la BD -->
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <version>8.3.0</version>
+        </dependency>
+
+        <!-- ── JavaFX ─────────────────────────────────────────────────────── -->
+        <!-- javafx-controls: Button, Label, TextField, ComboBox, etc.        -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- javafx-fxml: FXMLLoader, @FXML, fx:controller              -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- javafx-base: ObservableList, beans, etc. (transitivo pero
+             se declara explícitamente para mayor claridad)             -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Compilador -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <release>17</release>
+                </configuration>
+            </plugin>
+
+            <!-- JAR ejecutable con dependencias incluidas (fat jar para modo CLI)
+                 NOTA: Los módulos JavaFX se excluyen del shade porque contienen
+                 librerías nativas (.dll/.so) que no se pueden empaquetar en un
+                 fat-jar estándar. Para la UI usa: mvn javafx:run              -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.2</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals><goal>shade</goal></goals>
+                        <configuration>
+                            <artifactSet>
+                                <excludes>
+                                    <!-- Excluir módulos JavaFX del fat-jar -->
+                                    <exclude>org.openjfx:javafx-controls</exclude>
+                                    <exclude>org.openjfx:javafx-fxml</exclude>
+                                    <exclude>org.openjfx:javafx-base</exclude>
+                                    <exclude>org.openjfx:javafx-graphics</exclude>
+                                </excludes>
+                            </artifactSet>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <mainClass>${mainClass}</mainClass>
+                                </transformer>
+                            </transformers>
+                            <finalName>clinex</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- javafx-maven-plugin: ejecuta la app con UI usando
+                 mvn javafx:run                                                -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <!-- Clase principal de la UI (se creará en el Paso 2) -->
+                    <mainClass>com.mediconsult.beta.AppFX</mainClass>
+                    <!-- Opciones de la JVM para el módulo JavaFX -->
+                    <options>
+                        <option>--add-opens</option>
+                        <option>javafx.base/com.sun.javafx.event=ALL-UNNAMED</option>
+                    </options>
+                </configuration>
+            </plugin>
+
+            <!-- mvn exec:java → ejecuta la app directamente desde Maven -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <mainClass>${mainClass}</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

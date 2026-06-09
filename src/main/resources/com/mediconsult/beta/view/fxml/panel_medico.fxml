@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  panel_medico.fxml — CLINEX Medical Panel
+  Controller: PanelMedicoController
+-->
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.mediconsult.beta.controller.PanelMedicoController"
+      prefWidth="1280" prefHeight="800"
+      stylesheets="@styles.css"
+      style="-fx-background-color:#f8f9ff;">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP BAR
+         ═══════════════════════════════════════════════════ -->
+    <HBox styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+        <Label text="CLINEX" styleClass="top-bar-title"/>
+        <Region style="-fx-background-color:rgba(195,198,207,0.4); -fx-min-width:1; -fx-max-width:1; -fx-min-height:20;"/>
+        <Label text="Panel Médico" style="-fx-font-size:16px; -fx-text-fill:#43474e;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="⏻  Cerrar Sesión"
+                onAction="#onCerrarSesion"
+                style="-fx-background-color:#ba1a1a; -fx-text-fill:white; -fx-font-weight:bold; -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand; -fx-font-size:13px;"/>
+    </HBox>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <HBox VBox.vgrow="ALWAYS" spacing="0">
+
+        <!-- ─── PANEL IZQUIERDO: Perfil médico + stats ────────── -->
+        <VBox prefWidth="320" minWidth="260" spacing="20"
+              style="-fx-padding:28 24 28 28; -fx-background-color:#ffffff; -fx-border-color:transparent rgba(195,198,207,0.4) transparent transparent; -fx-border-width:0 1 0 0;">
+
+            <!-- Avatar e info del médico -->
+            <VBox spacing="10" alignment="CENTER">
+                <StackPane style="-fx-background-color:#1a3a5c; -fx-background-radius:40; -fx-min-width:80; -fx-min-height:80; -fx-max-width:80; -fx-max-height:80; -fx-alignment:center;">
+                    <Label text="⚕" style="-fx-font-size:36px;"/>
+                </StackPane>
+                <Label fx:id="nombreMedicoLabel" text="Dr(a). Médico"
+                       style="-fx-font-size:17px; -fx-font-weight:bold; -fx-text-fill:#0b1c30; -fx-text-alignment:center;"
+                       wrapText="true"/>
+                <Label fx:id="especialidadLabel" text="Medicina General"
+                       style="-fx-background-color:rgba(46,134,222,0.12); -fx-background-radius:20; -fx-padding:4 14; -fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+            </VBox>
+
+            <!-- Separador -->
+            <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+            <!-- Estadísticas -->
+            <VBox spacing="12">
+                <Label text="RESUMEN DE CITAS"
+                       style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+
+                <HBox spacing="12">
+                    <!-- Pendientes -->
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statPendientesLabel" text="0"
+                               style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#F59E0B;"/>
+                        <Label text="PENDIENTES"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#92400E;"/>
+                    </VBox>
+                    <!-- Hoy -->
+                    <VBox styleClass="stat-card" alignment="CENTER" spacing="4" HBox.hgrow="ALWAYS">
+                        <Label fx:id="statHoyLabel" text="0"
+                               style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#2E86DE;"/>
+                        <Label text="HOY"
+                               style="-fx-font-size:10px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Separador -->
+            <Region style="-fx-background-color:rgba(195,198,207,0.5); -fx-min-height:1; -fx-max-height:1;"/>
+
+            <!-- Tips -->
+            <VBox spacing="8"
+                  style="-fx-background-color:#eff4ff; -fx-background-radius:12; -fx-padding:14 16; -fx-border-color:rgba(46,134,222,0.2); -fx-border-radius:12; -fx-border-width:1;">
+                <Label text="ℹ  Guía rápida"
+                       style="-fx-font-size:12px; -fx-font-weight:bold; -fx-text-fill:#0060aa;"/>
+                <Label text="1. Haz clic en «Iniciar Consulta» para atender a un paciente.&#10;2. En la consulta verás el historial y los autodiagnósticos IA.&#10;3. Completa la historia clínica y guarda.&#10;4. Al finalizar, marca la cita como Completada."
+                       style="-fx-font-size:11px; -fx-text-fill:#43474e; -fx-wrap-text:true;"
+                       wrapText="true"/>
+            </VBox>
+
+        </VBox>
+
+        <!-- ─── PANEL DERECHO: Citas pendientes ──────────────── -->
+        <VBox HBox.hgrow="ALWAYS" spacing="0" style="-fx-padding:28 28 28 24;">
+
+            <HBox alignment="CENTER_LEFT" spacing="12" style="-fx-padding:0 0 16 0;">
+                <Label text="Mis Citas Pendientes"
+                       style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#0b1c30;"/>
+            </HBox>
+
+            <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                        style="-fx-background:transparent; -fx-background-color:transparent;">
+                <VBox fx:id="citasPendientesView" spacing="12"
+                      style="-fx-padding:0 4 8 4;"/>
+            </ScrollPane>
+
+        </VBox>
+    </HBox>
+
+</VBox>

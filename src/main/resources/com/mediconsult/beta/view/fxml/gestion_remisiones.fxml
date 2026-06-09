@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.*?>
+
+<!--
+  gestion_remisiones.fxml — CLINEX Admin Referral Management
+  Controller: GestionRemisionesController
+-->
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="rootPane"
+            fx:controller="com.mediconsult.beta.controller.GestionRemisionesController"
+            prefWidth="1280" prefHeight="800"
+            style="-fx-background-color:#f8f9ff;"
+            stylesheets="@styles.css">
+
+    <!-- ═══════════════════════════════════════════════════
+         TOP APP BAR
+         ═══════════════════════════════════════════════════ -->
+    <top>
+        <HBox fx:id="topBar" styleClass="top-bar" alignment="CENTER_LEFT" spacing="16">
+            <fx:include source="header_logo.fxml"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="🔔" styleClass="top-bar-icon-btn" onAction="#onNotificaciones"/>
+            <Button text="⚙" styleClass="top-bar-icon-btn"/>
+            <Label fx:id="avatarCircle" text="U"
+                   style="-fx-background-color:#54a3fd; -fx-background-radius:20; -fx-min-width:40; -fx-min-height:40; -fx-max-width:40; -fx-max-height:40; -fx-alignment:center; -fx-font-weight:bold; -fx-text-fill:white; -fx-font-size:14px; -fx-cursor:hand;"/>
+        </HBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONTENIDO PRINCIPAL
+         ═══════════════════════════════════════════════════ -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color:transparent; -fx-background:#f8f9ff;">
+            <VBox spacing="0" style="-fx-background-color:#f8f9ff;">
+                <padding><Insets top="48" right="48" bottom="120" left="48"/></padding>
+
+                <!-- Encabezado -->
+                <VBox spacing="6">
+                    <Label text="Gestión de Remisiones" styleClass="label-headline-lg"/>
+                    <Label text="Asigna especialistas y gestiona el estado de las remisiones"
+                           styleClass="label-body-lg"/>
+                </VBox>
+
+                <Region prefHeight="32"/>
+
+                <!-- ── Estadísticas ────────────────────────────── -->
+                <HBox spacing="24">
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8"
+                          style="-fx-border-width:0 0 0 4; -fx-border-color:#2E86DE rgba(46,134,222,0.15) rgba(46,134,222,0.15) rgba(46,134,222,0.15);">
+                        <Label text="TOTAL" styleClass="stat-card-label"/>
+                        <Label fx:id="statTotalLabel" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8"
+                          style="-fx-border-width:0 0 0 4; -fx-border-color:#F59E0B rgba(46,134,222,0.15) rgba(46,134,222,0.15) rgba(46,134,222,0.15);">
+                        <Label text="PENDIENTES" styleClass="stat-card-label"/>
+                        <Label fx:id="statPendientesLabel" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8"
+                          style="-fx-border-width:0 0 0 4; -fx-border-color:#2E86DE rgba(46,134,222,0.15) rgba(46,134,222,0.15) rgba(46,134,222,0.15);">
+                        <Label text="EN ATENCIÓN" styleClass="stat-card-label"/>
+                        <Label fx:id="statEnAtencionLabel" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                    <VBox styleClass="stat-card" HBox.hgrow="ALWAYS" spacing="8"
+                          style="-fx-border-width:0 0 0 4; -fx-border-color:#065F46 rgba(46,134,222,0.15) rgba(46,134,222,0.15) rgba(46,134,222,0.15);">
+                        <Label text="COMPLETADAS" styleClass="stat-card-label"/>
+                        <Label fx:id="statCompletadasLabel" text="0" styleClass="stat-card-value"/>
+                    </VBox>
+                </HBox>
+
+                <Region prefHeight="24"/>
+
+                <!-- ── Filtros ─────────────────────────────────── -->
+                <HBox spacing="8" alignment="CENTER_LEFT">
+                    <Button fx:id="filtroTodosBtn"    text="Todos"
+                            onAction="#onFiltroTodos"
+                            style="-fx-background-color:#002444; -fx-text-fill:white; -fx-background-radius:20; -fx-padding:6 18; -fx-cursor:hand; -fx-font-weight:bold; -fx-font-size:12px;"/>
+                    <Button fx:id="filtroPendienteBtn" text="⏳ Pendiente"
+                            onAction="#onFiltroPendiente"
+                            style="-fx-background-color:#FEF3C7; -fx-text-fill:#92400E; -fx-background-radius:20; -fx-padding:6 18; -fx-cursor:hand; -fx-font-weight:bold; -fx-font-size:12px;"/>
+                    <Button fx:id="filtroAceptadaBtn"  text="✓ Aceptada"
+                            onAction="#onFiltroAceptada"
+                            style="-fx-background-color:#D1FAE5; -fx-text-fill:#065F46; -fx-background-radius:20; -fx-padding:6 18; -fx-cursor:hand; -fx-font-weight:bold; -fx-font-size:12px;"/>
+                    <Button fx:id="filtroAtencionBtn"  text="⚕ En Atención"
+                            onAction="#onFiltroEnAtencion"
+                            style="-fx-background-color:#DBEAFE; -fx-text-fill:#1E40AF; -fx-background-radius:20; -fx-padding:6 18; -fx-cursor:hand; -fx-font-weight:bold; -fx-font-size:12px;"/>
+                    <Button fx:id="filtroCompletadaBtn" text="✔ Completada"
+                            onAction="#onFiltroCompletada"
+                            style="-fx-background-color:#E0E7FF; -fx-text-fill:#3730A3; -fx-background-radius:20; -fx-padding:6 18; -fx-cursor:hand; -fx-font-weight:bold; -fx-font-size:12px;"/>
+                    <Button fx:id="filtroCanceladaBtn" text="✗ Cancelada"
+                            onAction="#onFiltroCancelada"
+                            style="-fx-background-color:#FEE2E2; -fx-text-fill:#991B1B; -fx-background-radius:20; -fx-padding:6 18; -fx-cursor:hand; -fx-font-weight:bold; -fx-font-size:12px;"/>
+                </HBox>
+
+                <Region prefHeight="16"/>
+
+                <!-- ── Label del filtro activo ─────────────────── -->
+                <Label fx:id="filtroActivoLabel" text="Mostrando: Todos"
+                       style="-fx-font-size:12px; -fx-text-fill:#73777f; -fx-padding:0 0 8 0;"/>
+
+                <!-- ── Lista de remisiones ─────────────────────── -->
+                <VBox fx:id="remisionesView" spacing="12"/>
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- ═══════════════════════════════════════════════════
+         BOTTOM: Navegación inferior
+         ═══════════════════════════════════════════════════ -->
+    <bottom>
+        <StackPane style="-fx-background-color:transparent; -fx-padding:0 0 20 0;"
+                   pickOnBounds="false">
+            <HBox styleClass="bottom-nav"
+                  alignment="CENTER"
+                  spacing="4"
+                  maxWidth="700"
+                  StackPane.alignment="BOTTOM_CENTER"
+                  style="-fx-background-color:#002444; -fx-background-radius:30; -fx-padding:10 24 10 24; -fx-effect:dropshadow(gaussian,rgba(0,36,68,0.25),16,0,0,4); -fx-translate-y:-20;">
+                <Button text="👥  Pacientes"    styleClass="nav-tab"        onAction="#onNavPacientes"/>
+                <Button text="⚕  Médicos"       styleClass="nav-tab"        onAction="#onNavMedicos"/>
+                <Button text="📅  Citas"         styleClass="nav-tab"        onAction="#onNavCitas"/>
+                <Button text="🔗  Remisiones"       styleClass="nav-tab-active" onAction="#onNavRemisiones"/>
+                <Button text="⏳  Lista de Espera" styleClass="nav-tab"        onAction="#onNavListaEspera"/>
+            </HBox>
+        </StackPane>
+    </bottom>
+
+</BorderPane>
