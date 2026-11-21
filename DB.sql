@@ -3,6 +3,9 @@
 --  Base de Datos - Schema completo y corregido
 --  Programación de Computadores III - UPC
 --  v2 — elimina y recrea todo limpio
+--  Nota: al arrancar, la aplicación crea las tablas historia_clinica,
+--  orden_medica y autodiagnostico, agrega columnas nuevas y amplía los
+--  roles (MEDICO_GENERAL, MEDICO_ESPECIALISTA, PACIENTE) automáticamente.
 -- ============================================================
 
 -- Eliminar BD si existe y crearla de nuevo limpia

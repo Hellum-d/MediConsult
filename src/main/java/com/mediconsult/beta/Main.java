@@ -11,7 +11,10 @@ import com.mediconsult.beta.util.Sesion;
 import com.mediconsult.beta.view.MenuPrincipal;
 
 /**
- * Punto de entrada de MediConsult-Beta.
+ * Punto de entrada del modo consola de MediConsult-Beta (heredado de la v0.1).
+ *
+ * <p>La interfaz principal del sistema es JavaFX ({@link AppFX},
+ * {@code mvn javafx:run}); este modo se conserva como referencia.</p>
  *
  * <p>Responsabilidades al arrancar:</p>
  * <ol>
@@ -25,7 +28,7 @@ import com.mediconsult.beta.view.MenuPrincipal;
  * a todos los menús, para evitar abrir múltiples streams sobre {@code System.in}.</p>
  *
  * @author MediConsult Team
- * @version 0.1
+ * @version 0.2
  */
 public class Main {
 
@@ -42,9 +45,9 @@ public class Main {
 
         // ── 3. Splash ────────────────────────────────────────────────────
         System.out.println();
-        ConsoleUtil.imprimirEncabezado("MEDICONSULT BETA  v0.1");
+        ConsoleUtil.imprimirEncabezado("MEDICONSULT BETA  v0.2  (modo consola)");
         System.out.println("  Sistema de Gestión Hospitalaria");
-        System.out.println("  Persistencia: CSV  |  IA: OpenAI GPT-4o-mini");
+        System.out.println("  Persistencia: MySQL  |  IA: OpenAI GPT-4.1");
         ConsoleUtil.imprimirSeparador();
 
         // ── 4. Bucle de sesión ───────────────────────────────────────────
