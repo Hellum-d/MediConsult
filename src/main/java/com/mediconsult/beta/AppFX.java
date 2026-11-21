@@ -2,7 +2,11 @@ package com.mediconsult.beta;
 
 import com.mediconsult.beta.model.Usuario;
 import com.mediconsult.beta.util.ArchivoUtil;
+import com.mediconsult.beta.util.ConexionDB;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextArea;
 import javafx.fxml.FXMLLoader; 
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -75,6 +79,12 @@ public class AppFX extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
+        // 0. Verificar la conexión a MySQL antes de cargar cualquier vista
+        if (!verificarConexion()) {
+            Platform.exit();
+            return;
+        }
+
         // 1. Cargar el FXML de login
         FXMLLoader loader = new FXMLLoader(getClass().getResource(FXML_LOGIN));
         Parent root = loader.load();
@@ -106,6 +116,42 @@ public class AppFX extends Application {
         });
 
         stage.show();
+    }
+
+    /**
+     * Intenta conectar a MySQL. Si falla, muestra un diálogo con la causa
+     * y cómo configurar la conexión, en lugar de una excepción en consola.
+     *
+     * @return {@code true} si la conexión se estableció
+     */
+    private boolean verificarConexion() {
+        try {
+            ConexionDB.getInstance();
+            return true;
+        } catch (RuntimeException e) {
+            Throwable causa = e.getCause() != null ? e.getCause() : e;
+            String detalle =
+                    "Causa: " + causa.getMessage() + "\n\n"
+                  + ConexionDB.descripcionConfiguracion() + "\n\n"
+                  + "Verifica que MySQL esté encendido y que hayas ejecutado DB.sql.\n"
+                  + "Si tu usuario o contraseña no son root / 1234, define las\n"
+                  + "variables de entorno y vuelve a abrir la aplicación:\n\n"
+                  + "  setx MYSQL_USER \"tu_usuario\"\n"
+                  + "  setx MYSQL_PASSWORD \"tu_contraseña\"\n\n"
+                  + "(Opcional: MYSQL_URL para otro host, puerto o base de datos.)";
+            System.err.println("[AppFX] No se pudo conectar a MySQL.\n" + detalle);
+
+            TextArea texto = new TextArea(detalle);
+            texto.setEditable(false);
+            texto.setWrapText(true);
+
+            Alert alerta = new Alert(Alert.AlertType.ERROR);
+            alerta.setTitle(TITULO);
+            alerta.setHeaderText("No se pudo conectar a la base de datos MySQL");
+            alerta.getDialogPane().setContent(texto);
+            alerta.showAndWait();
+            return false;
+        }
     }
 
     // ── Punto de entrada de la UI ──────────────────────────────────────────

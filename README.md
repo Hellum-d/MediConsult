@@ -44,9 +44,15 @@ Proyecto académico de **Programación de Computadores III** — Universidad Pop
    completa automáticamente el resto (tablas `historia_clinica`, `orden_medica`,
    `autodiagnostico`, nuevas columnas y roles), así que no hace falta otro script.
 
-2. **Conexión** — por defecto se usa `root` / `1234` en `localhost:3306`.
-   Si tus credenciales son otras, cámbialas en
-   `src/main/java/com/mediconsult/beta/util/ConexionDB.java`.
+2. **Conexión** — por defecto se usa `root` / `1234` en `localhost:3306`, base `clinex`.
+   Si tus credenciales son otras, defínelas con variables de entorno (no hace falta tocar el código):
+   ```powershell
+   setx MYSQL_USER "tu_usuario"
+   setx MYSQL_PASSWORD "tu_contraseña"
+   ```
+   Opcional: `MYSQL_URL` para usar otro host, puerto o base de datos.
+   Después de `setx` abre una terminal nueva (o reinicia NetBeans) para que tome los valores.
+   Si la conexión falla, la aplicación muestra un aviso con la causa y estos pasos.
 
 3. **API key de OpenAI** — se lee de la variable de entorno `OPENAI_API_KEY`
    (nunca la escribas en el código):

@@ -1,6 +1,6 @@
 package com.mediconsult.beta.util;
 
-import java.sql.Connection; 
+import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
@@ -10,18 +10,26 @@ import java.sql.SQLException;
  * <p>Solo existe una conexión activa en toda la aplicación.
  * Todos los DAOs la obtienen a través de {@link #getConexion()}.</p>
  *
- * <p><strong>Configuración:</strong> Cambia las constantes URL, USER y PASSWORD
- * según tu entorno local antes de ejecutar.</p>
+ * <p><strong>Configuración:</strong> los datos de conexión se leen de
+ * variables de entorno; si no están definidas se usan los valores por defecto.</p>
+ * <ul>
+ *   <li>{@code MYSQL_URL}      — por defecto {@code jdbc:mysql://localhost:3306/clinex?...}</li>
+ *   <li>{@code MYSQL_USER}     — por defecto {@code root}</li>
+ *   <li>{@code MYSQL_PASSWORD} — por defecto {@code 1234}</li>
+ * </ul>
  *
  * @author MediConsult Team
- * @version 0.2 — migración JDBC
+ * @version 0.3 — configuración por variables de entorno
  */
 public class ConexionDB {
 
     // ── Configuración de conexión ──────────────────────────────────────────
-    private static final String URL      = "jdbc:mysql://localhost:3306/clinex?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
-    private static final String USER     = "root";
-    private static final String PASSWORD = "1234"; //
+    private static final String URL_POR_DEFECTO =
+            "jdbc:mysql://localhost:3306/clinex?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+
+    private static final String URL      = leerVariable("MYSQL_URL",      URL_POR_DEFECTO);
+    private static final String USER     = leerVariable("MYSQL_USER",     "root");
+    private static final String PASSWORD = leerVariable("MYSQL_PASSWORD", "1234");
 
     // ── Instancia única ────────────────────────────────────────────────────
     private static ConexionDB instancia;
@@ -35,6 +43,12 @@ public class ConexionDB {
         } catch (SQLException e) {
             throw new RuntimeException("[ConexionDB] No se pudo conectar a MySQL: " + e.getMessage(), e);
         }
+    }
+
+    /** Devuelve el valor de la variable de entorno, o {@code porDefecto} si no existe o está vacía. */
+    private static String leerVariable(String nombre, String porDefecto) {
+        String valor = System.getenv(nombre);
+        return (valor == null || valor.isBlank()) ? porDefecto : valor;
     }
 
     // ── Punto de acceso único ──────────────────────────────────────────────
@@ -63,6 +77,15 @@ public class ConexionDB {
      */
     public Connection getConexion() {
         return conexion;
+    }
+
+    /**
+     * Describe a dónde intenta conectarse la aplicación (sin mostrar la contraseña).
+     *
+     * @return texto con la URL y el usuario configurados
+     */
+    public static String descripcionConfiguracion() {
+        return "URL: " + URL + "\nUsuario: " + USER;
     }
 
     /**
